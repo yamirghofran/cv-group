@@ -17,7 +17,7 @@ wheels/
 object-detection/outputs/
 object-detection/data/raw/
 object-detection/checkpoints/
-object-detection/sam2/
+third_party/sam2/
 
 # Other files
 context/

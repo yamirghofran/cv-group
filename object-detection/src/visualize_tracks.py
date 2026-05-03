@@ -47,8 +47,11 @@ def render_track_video(video_path: str | Path, tracks_path: str | Path, output_p
     metadata = video_metadata(video_path)
     writer = open_video_writer(output_path, float(metadata["fps"]), int(metadata["width"]), int(metadata["height"]))
     track_map = tracks_by_frame(read_json(tracks_path))
+    max_track_frame = max(track_map) if track_map else -1
     try:
         for frame_id, frame in iter_video_frames(video_path):
+            if frame_id > max_track_frame:
+                break
             annotated = frame.copy()
             for track in track_map.get(frame_id, []):
                 track_id = int(track["track_id"])
