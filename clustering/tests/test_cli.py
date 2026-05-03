@@ -17,6 +17,9 @@ class _StubClassifier:
     mean-red channel, so the synthetic red/blue fixtures separate cleanly.
     """
 
+    def __init__(self) -> None:
+        self.fit_predict_called_with: list[np.ndarray] | None = None
+
     def fit(self, crops: list[np.ndarray]) -> None:
         return None
 
@@ -27,6 +30,10 @@ class _StubClassifier:
             red = float(crop[..., 2].mean())
             labels.append(0 if red >= blue else 1)
         return np.array(labels)
+
+    def fit_predict(self, crops: list[np.ndarray]) -> np.ndarray:
+        self.fit_predict_called_with = crops
+        return self.predict(crops)
 
 
 def test_parse_args_requires_crops_dir(capsys: pytest.CaptureFixture[str]) -> None:
@@ -68,6 +75,30 @@ def test_run_writes_json_with_one_assignment_per_crop(tmp_path: Path) -> None:
     assert on_disk["classifier_method"] == DEFAULT_METHOD
     assert on_disk["n_teams"] == 2
     assert len(on_disk["assignments"]) == 6
+
+
+def test_run_uses_fit_predict_not_separate_fit_and_predict(tmp_path: Path) -> None:
+    """Confirm the CLI uses the single-pass path so SigLIP doesn't run twice."""
+
+    last: dict[str, _StubClassifier] = {}
+
+    def factory() -> _StubClassifier:
+        c = _StubClassifier()
+        last["c"] = c
+        return c
+
+    args = argparse.Namespace(
+        crops_dir=FIXTURES,
+        output=tmp_path / "out.json",
+        device="cpu",
+        batch_size=32,
+        method=DEFAULT_METHOD,
+    )
+
+    run(args, classifier_factory=factory)
+
+    assert last["c"].fit_predict_called_with is not None
+    assert len(last["c"].fit_predict_called_with) == 6
 
 
 def test_run_separates_red_and_blue_fixtures(tmp_path: Path) -> None:

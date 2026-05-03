@@ -30,6 +30,24 @@ def test_classifier_public_api() -> None:
     predict_params = list(inspect.signature(TeamClassifier.predict).parameters)
     assert predict_params == ["self", "crops"]
 
+    fit_predict_params = list(inspect.signature(TeamClassifier.fit_predict).parameters)
+    assert fit_predict_params == ["self", "crops"]
+
+
+def test_fit_predict_returns_empty_array_for_empty_input() -> None:
+    from clustering.classifier import TeamClassifier
+
+    fp = TeamClassifier.fit_predict.__wrapped__ if hasattr(
+        TeamClassifier.fit_predict, "__wrapped__"
+    ) else TeamClassifier.fit_predict
+
+    class _Fake:
+        pass
+
+    out = fp(_Fake(), [])  # type: ignore[arg-type]
+    assert isinstance(out, np.ndarray)
+    assert out.size == 0
+
 
 def test_create_batches_chunks_correctly() -> None:
     from clustering.classifier import create_batches

@@ -23,6 +23,7 @@ DEFAULT_METHOD = "siglip+umap+kmeans"
 class _ClassifierLike(Protocol):
     def fit(self, crops: list[np.ndarray]) -> None: ...
     def predict(self, crops: list[np.ndarray]) -> np.ndarray: ...
+    def fit_predict(self, crops: list[np.ndarray]) -> np.ndarray: ...
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -94,8 +95,7 @@ def run(
         )
 
     classifier = classifier_factory()
-    classifier.fit(images_list)
-    cluster_ids = classifier.predict(images_list)
+    cluster_ids = classifier.fit_predict(images_list)
 
     output = TeamOutput(
         crops_dir=str(args.crops_dir),

@@ -87,3 +87,18 @@ class TeamClassifier:
         data = self.extract_features(crops)
         projections = self.reducer.transform(data)
         return self.cluster_model.predict(projections)
+
+    def fit_predict(self, crops: list[np.ndarray]) -> np.ndarray:
+        """Fit on `crops` and return their team labels in one feature-extraction pass.
+
+        Equivalent in result to `fit(crops)` followed by `predict(crops)`, but
+        runs SigLIP only once. Use this when you want labels for the same set
+        you fit on (the common single-clip CLI case). For separate train and
+        inference sets, call `fit` and `predict` independently.
+        """
+        if len(crops) == 0:
+            return np.array([])
+
+        data = self.extract_features(crops)
+        projections = self.reducer.fit_transform(data)
+        return self.cluster_model.fit_predict(projections)
