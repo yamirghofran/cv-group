@@ -19,6 +19,10 @@ object-detection/data/raw/
 object-detection/checkpoints/
 third_party/sam2/
 
+# Clustering generated/local files
+clustering/outputs/
+clustering/data/
+
 # Other files
 context/
 .DS_Store
