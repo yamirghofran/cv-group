@@ -55,8 +55,9 @@ uv run basketball-team-cluster \
 ```
 
 Optional flags: `--device cuda` for GPU SigLIP, `--batch-size N` (default 32),
-`--method NAME` (recorded in the output JSON; only `siglip+umap+kmeans` is
-implemented today).
+`--n-teams N` (default 2; pass `3` to set up the referee-rejection ablation
+where the smallest cluster is dropped), `--method NAME` (recorded in the
+output JSON; only `siglip+umap+kmeans` is implemented today).
 
 ## Output format
 

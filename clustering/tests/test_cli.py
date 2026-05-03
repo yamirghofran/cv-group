@@ -54,7 +54,15 @@ def test_parse_args_defaults() -> None:
     args = parse_args(["--crops-dir", "/tmp/c", "--output", "/tmp/o.json"])
     assert args.device == "cpu"
     assert args.batch_size == 32
+    assert args.n_teams == 2
     assert args.method == DEFAULT_METHOD
+
+
+def test_parse_args_accepts_n_teams_override() -> None:
+    args = parse_args(
+        ["--crops-dir", "/tmp/c", "--output", "/tmp/o.json", "--n-teams", "3"]
+    )
+    assert args.n_teams == 3
 
 
 def test_run_writes_json_with_one_assignment_per_crop(tmp_path: Path) -> None:
@@ -63,6 +71,7 @@ def test_run_writes_json_with_one_assignment_per_crop(tmp_path: Path) -> None:
         output=tmp_path / "out.json",
         device="cpu",
         batch_size=32,
+        n_teams=2,
         method=DEFAULT_METHOD,
     )
 
@@ -92,6 +101,7 @@ def test_run_uses_fit_predict_not_separate_fit_and_predict(tmp_path: Path) -> No
         output=tmp_path / "out.json",
         device="cpu",
         batch_size=32,
+        n_teams=2,
         method=DEFAULT_METHOD,
     )
 
@@ -107,6 +117,7 @@ def test_run_separates_red_and_blue_fixtures(tmp_path: Path) -> None:
         output=tmp_path / "out.json",
         device="cpu",
         batch_size=32,
+        n_teams=2,
         method=DEFAULT_METHOD,
     )
 
@@ -127,6 +138,7 @@ def test_run_creates_output_parent_directory(tmp_path: Path) -> None:
         output=tmp_path / "nested" / "deeply" / "out.json",
         device="cpu",
         batch_size=32,
+        n_teams=2,
         method=DEFAULT_METHOD,
     )
 
@@ -141,8 +153,43 @@ def test_run_raises_on_empty_crops_dir(tmp_path: Path) -> None:
         output=tmp_path / "out.json",
         device="cpu",
         batch_size=32,
+        n_teams=2,
         method=DEFAULT_METHOD,
     )
 
     with pytest.raises(ValueError, match="No crops found"):
         run(args, classifier_factory=_StubClassifier)
+
+
+def test_run_raises_when_fewer_crops_than_n_teams(tmp_path: Path) -> None:
+    import cv2
+
+    cv2.imwrite(
+        str(tmp_path / "lonely.png"), np.zeros((4, 4, 3), dtype=np.uint8)
+    )
+
+    args = argparse.Namespace(
+        crops_dir=tmp_path,
+        output=tmp_path / "out.json",
+        device="cpu",
+        batch_size=32,
+        n_teams=2,
+        method=DEFAULT_METHOD,
+    )
+
+    with pytest.raises(ValueError, match="Need at least 2 crops"):
+        run(args, classifier_factory=_StubClassifier)
+
+
+def test_run_passes_n_teams_through_to_output(tmp_path: Path) -> None:
+    args = argparse.Namespace(
+        crops_dir=FIXTURES,
+        output=tmp_path / "out.json",
+        device="cpu",
+        batch_size=32,
+        n_teams=3,
+        method=DEFAULT_METHOD,
+    )
+
+    output = run(args, classifier_factory=_StubClassifier)
+    assert output.n_teams == 3

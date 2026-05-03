@@ -59,6 +59,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Batch size for SigLIP feature extraction (default: 32).",
     )
     parser.add_argument(
+        "--n-teams",
+        type=int,
+        default=2,
+        help=(
+            "Number of clusters to fit (default: 2). Use 3 to set up the "
+            "referee-rejection ablation."
+        ),
+    )
+    parser.add_argument(
         "--method",
         default=DEFAULT_METHOD,
         help=(
@@ -86,12 +95,20 @@ def run(
     paths, images = zip(*pairs, strict=True)
     images_list = list(images)
 
+    if len(images_list) < args.n_teams:
+        raise ValueError(
+            f"Need at least {args.n_teams} crops for n_teams={args.n_teams}; "
+            f"found {len(images_list)} in {args.crops_dir}"
+        )
+
     if classifier_factory is None:
         # Local import keeps the CLI module importable without transformers.
         from clustering.classifier import TeamClassifier
 
         classifier_factory = lambda: TeamClassifier(  # noqa: E731
-            device=args.device, batch_size=args.batch_size
+            device=args.device,
+            batch_size=args.batch_size,
+            n_teams=args.n_teams,
         )
 
     classifier = classifier_factory()
@@ -100,7 +117,7 @@ def run(
     output = TeamOutput(
         crops_dir=str(args.crops_dir),
         classifier_method=args.method,
-        n_teams=2,
+        n_teams=args.n_teams,
         assignments=[
             TeamAssignment(crop_path=str(path), cluster_id=int(cid))
             for path, cid in zip(paths, cluster_ids, strict=True)
