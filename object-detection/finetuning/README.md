@@ -22,7 +22,7 @@ ROBOFLOW_VERSION=1
 
 ## 1. Download the dataset (YOLOv8 format)
 
-**This probably won't work, I'd use the plain cURL I sent on discord instead**
+**This probably won't work, I'd use the plain cURL I sent on discord instead / the one you can find on roboflow**
 
 ```bash
 uv run python object-detection/data.py
@@ -44,14 +44,26 @@ uv run python object-detection/finetuning/train.py \
   --model yolo11s.pt \
   --epochs 80 \
   --imgsz 640 \
-  --batch 16
+  --batch 16 \
+  --patience 15 \
+  --name basketball_yolo11s
 ```
 
 - Device defaults to `auto`: CUDA if available, otherwise MPS, otherwise CPU.
 - Outputs land in `object-detection/finetuning/runs/basketball_yolo11s/`.
 - Best weights: `runs/basketball_yolo11s/weights/best.pt`.
 
-For a sanity smoke test, drop `--epochs 80` to `--epochs 2` and `--batch` to something the machine can handle. macOS / MPS works for this; full training is best done on a CUDA GPU (Colab, university cluster).
+For a sanity smoke test, drop `--epochs 80` to `--epochs 2` and `--batch` to something the machine can handle. macOS / MPS works for this; full training is best done on a CUDA GPU (Colab, university cluster):
+
+```bash
+uv run python object-detection/finetuning/train.py \
+  --data object-detection/data/yolov8/basketball_cv_project-1/data.yaml \
+  --model yolo11s.pt \
+  --epochs 2 \
+  --imgsz 640 \
+  --batch 8 \
+  --name smoke
+```
 
 ## 3. Smoke-test the trained checkpoint
 
