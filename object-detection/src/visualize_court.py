@@ -44,6 +44,18 @@ def draw_source_tracks(frame: np.ndarray, tracks: list[dict[str, Any]], tracks_p
         draw_bbox(frame, track["bbox_xyxy"], f"ID {track_id}", color)
 
 
+def render_source_panel(
+    frame: np.ndarray,
+    tracks: list[dict[str, Any]],
+    tracks_path: str | Path,
+    mask_alpha: float,
+    target_height: int,
+) -> np.ndarray:
+    annotated = frame.copy()
+    draw_source_tracks(annotated, tracks, tracks_path, mask_alpha)
+    return resize_to_height(annotated, target_height)
+
+
 def draw_court_motion(
     court_image: np.ndarray,
     frame_id: int,
@@ -114,8 +126,7 @@ def render_side_by_side(args: argparse.Namespace) -> None:
         for frame_id, frame in iter_video_frames(video_path):
             if frame_id > max_frame:
                 break
-            source_panel = resize_to_height(frame.copy(), panel_height)
-            draw_source_tracks(source_panel, track_map.get(frame_id, []), args.tracks, args.mask_alpha)
+            source_panel = render_source_panel(frame, track_map.get(frame_id, []), args.tracks, args.mask_alpha, panel_height)
             court_frame = court_base.copy()
             draw_court_motion(court_frame, frame_id, court_map, court, court_scale, 35, trail_length)
             court_frame = resize_to_height(court_frame, panel_height)
