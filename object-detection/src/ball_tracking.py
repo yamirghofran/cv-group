@@ -27,6 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--min-confidence", type=float, help="Minimum accepted ball confidence, 0-1.")
     parser.add_argument("--max-missing-gap", type=int, help="Maximum gap to interpolate.")
     parser.add_argument("--max-jump-px", type=float, help="Reject detected ball jumps above this distance.")
+    parser.add_argument("--prediction-gate-px", type=float, help="Maximum distance from constant-velocity prediction.")
     parser.add_argument("--smoothing-window", type=int, help="Odd moving-average window for detected/interpolated points.")
     parser.add_argument("--api-key-env", default="ROBOFLOW_API_KEY")
     parser.add_argument("--mock-response", help="Roboflow-style response reused for every sampled frame.")
@@ -43,15 +44,46 @@ def detection_center(detection: DetectionRecord) -> list[float]:
     return [(x1 + x2) / 2.0, (y1 + y2) / 2.0]
 
 
-def pick_ball_detection(detections: list[DetectionRecord], min_confidence: float) -> DetectionRecord | None:
-    candidates = [
+def ball_detection_candidates(detections: list[DetectionRecord], min_confidence: float) -> list[DetectionRecord]:
+    return [
         detection
         for detection in detections
         if detection.class_name.lower() == "ball" and detection.confidence >= min_confidence and bbox_area(detection.bbox_xyxy) > 0
     ]
+
+
+def pick_ball_detection(
+    detections: list[DetectionRecord],
+    min_confidence: float,
+    predicted_xy: list[float] | None = None,
+    prediction_gate_px: float | None = None,
+) -> DetectionRecord | None:
+    candidates = ball_detection_candidates(detections, min_confidence)
     if not candidates:
         return None
-    return max(candidates, key=lambda detection: detection.confidence)
+    if predicted_xy is None or prediction_gate_px is None or prediction_gate_px <= 0:
+        return max(candidates, key=lambda detection: detection.confidence)
+
+    prediction = np.array(predicted_xy, dtype=float)
+    scored: list[tuple[float, DetectionRecord]] = []
+    for detection in candidates:
+        distance = float(np.linalg.norm(np.array(detection_center(detection), dtype=float) - prediction))
+        if distance > prediction_gate_px:
+            continue
+        distance_penalty = min(1.0, distance / prediction_gate_px)
+        score = detection.confidence - 0.4 * distance_penalty
+        scored.append((score, detection))
+    if not scored:
+        return None
+    return max(scored, key=lambda item: item[0])[1]
+
+
+def predict_ball_xy(last_xy: np.ndarray | None, velocity_xy: np.ndarray | None, frames_since_last: int) -> list[float] | None:
+    if last_xy is None:
+        return None
+    velocity = velocity_xy if velocity_xy is not None else np.zeros(2, dtype=float)
+    predicted = last_xy + velocity * max(1, frames_since_last)
+    return [float(predicted[0]), float(predicted[1])]
 
 
 def interpolate_and_smooth_ball_frames(
@@ -121,6 +153,11 @@ def run_ball_tracking(args: argparse.Namespace) -> BallOutput:
     min_confidence = (
         args.min_confidence if args.min_confidence is not None else float(nested_get(config, "ball_tracking.min_confidence", 0.25))
     )
+    prediction_gate_px = (
+        args.prediction_gate_px
+        if args.prediction_gate_px is not None
+        else float(nested_get(config, "ball_tracking.prediction_gate_px", 300))
+    )
     settings = RoboflowHostedSettings(
         api_url=args.api_url or str(nested_get(config, "roboflow.api_url")),
         model_id=args.model_id or str(nested_get(config, "roboflow.model_id")),
@@ -135,6 +172,9 @@ def run_ball_tracking(args: argparse.Namespace) -> BallOutput:
     client = None if mock_payload is not None else RoboflowHostedClient(settings)
 
     frames: list[BallFrame] = []
+    last_accepted_xy: np.ndarray | None = None
+    last_velocity_xy: np.ndarray | None = None
+    last_accepted_frame_id: int | None = None
     progress = tqdm(total=frame_count or None, desc="Ball detection", unit="frame")
     for frame_id, frame in iter_video_frames(video_path):
         if args.max_frames is not None and frame_id >= args.max_frames:
@@ -143,11 +183,24 @@ def run_ball_tracking(args: argparse.Namespace) -> BallOutput:
         if should_process_frame(frame_id, frame_stride):
             frame_name = f"{video_path.stem}_ball_{frame_id:06d}.jpg"
             payload = mock_payload if mock_payload is not None else client.infer_frame(frame, frame_name)  # type: ignore[union-attr]
-            ball_detection = pick_ball_detection(normalize_roboflow_predictions(payload, width, height), min_confidence)
+            frames_since_last = frame_id - last_accepted_frame_id if last_accepted_frame_id is not None else 1
+            predicted_xy = predict_ball_xy(last_accepted_xy, last_velocity_xy, frames_since_last)
+            ball_detection = pick_ball_detection(
+                normalize_roboflow_predictions(payload, width, height),
+                min_confidence,
+                predicted_xy=predicted_xy,
+                prediction_gate_px=prediction_gate_px,
+            )
 
         if ball_detection is None:
             frames.append(BallFrame(frame_id=frame_id, timestamp_sec=frame_timestamp(frame_id, fps)))
         else:
+            current_xy = np.array(detection_center(ball_detection), dtype=float)
+            if last_accepted_xy is not None and last_accepted_frame_id is not None:
+                frame_delta = max(1, frame_id - last_accepted_frame_id)
+                last_velocity_xy = (current_xy - last_accepted_xy) / frame_delta
+            last_accepted_xy = current_xy
+            last_accepted_frame_id = frame_id
             frames.append(
                 BallFrame(
                     frame_id=frame_id,

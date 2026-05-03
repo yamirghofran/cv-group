@@ -63,12 +63,21 @@ ball_tracking:
   min_confidence: 0.25
   max_missing_gap: 6
   max_jump_px: 450
+  prediction_gate_px: 300
   smoothing_window: 3
 
 court_projection:
   court_length_ft: 94.0
   court_width_ft: 50.0
   out_of_bounds_margin_ft: 5.0
+  smoothing_window: 5
+  ball_smoothing_window: 3
+  max_player_jump_ft: 12.0
+  max_ball_jump_ft: 35.0
+  max_reused_player_frames: 10
+  ball_player_snap_distance_px: 90.0
+  ball_max_player_distance_ft: 20.0
+  ball_max_rim_distance_ft: 15.0
 
 court_visualization:
   panel_height: 720
