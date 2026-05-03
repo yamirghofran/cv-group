@@ -29,6 +29,10 @@ basketball-track = "src.tracking:main"
 basketball-visualize-detections = "src.visualize_detections:main"
 basketball-visualize-tracks = "src.visualize_tracks:main"
 basketball-export-crops = "src.export_crops:main"
+basketball-court-keypoints = "src.court_keypoints:main"
+basketball-ball-detect = "src.ball_tracking:main"
+basketball-project-court = "src.project_to_court:main"
+basketball-visualize-court = "src.visualize_court:main"
 
 [build-system]
 requires = ["setuptools>=69"]

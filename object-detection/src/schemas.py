@@ -95,3 +95,91 @@ class TrackOutput(PipelineModel):
     sam2_checkpoint: str | None = None
     mask_cleanup: dict[str, Any]
     frames: list[TrackFrame]
+
+
+class CourtKeypointRecord(PipelineModel):
+    class_name: str
+    class_id: int
+    confidence: float
+    image_xy: list[float]
+    source: str = "roboflow"
+
+    @field_validator("image_xy")
+    @classmethod
+    def validate_xy(cls, value: list[float]) -> list[float]:
+        if len(value) != 2:
+            raise ValueError("image_xy must contain exactly two values")
+        return [float(v) for v in value]
+
+
+class CourtKeypointFrame(PipelineModel):
+    frame_id: int
+    timestamp_sec: float
+    keypoints: list[CourtKeypointRecord]
+    valid: bool
+    reason: str | None = None
+
+
+class CourtKeypointOutput(PipelineModel):
+    video: str
+    fps: float
+    width: int
+    height: int
+    model_id: str
+    model_version: int
+    frame_stride: int
+    keypoint_confidence: float
+    min_keypoints: int
+    frames: list[CourtKeypointFrame]
+
+
+class BallFrame(PipelineModel):
+    frame_id: int
+    timestamp_sec: float
+    raw_detection: DetectionRecord | None = None
+    image_xy: list[float] | None = None
+    confidence: float | None = None
+    source: str = "missing"
+
+
+class BallOutput(PipelineModel):
+    video: str
+    fps: float
+    width: int
+    height: int
+    model_id: str
+    model_version: int
+    frame_stride: int
+    frames: list[BallFrame]
+
+
+class CourtPlayerProjection(PipelineModel):
+    track_id: int
+    image_xy: list[float]
+    court_xy: list[float] | None = None
+    valid: bool
+
+
+class CourtBallProjection(PipelineModel):
+    image_xy: list[float] | None = None
+    court_xy: list[float] | None = None
+    source: str = "missing"
+    valid: bool = False
+
+
+class CourtProjectionFrame(PipelineModel):
+    frame_id: int
+    timestamp_sec: float
+    homography_source_frame: int | None = None
+    players: list[CourtPlayerProjection]
+    ball: CourtBallProjection | None = None
+
+
+class CourtProjectionOutput(PipelineModel):
+    video: str
+    fps: float
+    width: int
+    height: int
+    court_length_ft: float
+    court_width_ft: float
+    frames: list[CourtProjectionFrame]

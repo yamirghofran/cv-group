@@ -1,9 +1,9 @@
 # Basketball Object Detection And Tracking
 
-This directory implements the object detection and player tracking section of the basketball computer vision pipeline:
+This directory implements the object detection, player tracking, and 2D court movement section of the basketball computer vision pipeline:
 
 ```text
-video -> Roboflow detections -> SAM2 tracking -> mask cleanup -> handoff outputs
+video -> Roboflow detections -> SAM2 tracking -> court keypoints -> 2D court movement
 ```
 
 The downstream team-clustering and jersey-number modules should consume the JSON, masks, and crops generated here.
@@ -106,13 +106,63 @@ uv run basketball-visualize-tracks \
   --output object-detection/outputs/videos/clip_001_tracks.mp4
 ```
 
+## 2D Court Movement Mapping
+
+This extension projects tracked players and ball movement onto a top-down NBA court. It uses Roboflow's `basketball-court-detection-2` court keypoint model as a calibration source, then computes homographies with OpenCV. The default config currently targets version `19`; pass `--model-version` to pin a different Roboflow version.
+
+Run court keypoint detection every 15 frames:
+
+```bash
+uv run basketball-court-keypoints \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --output object-detection/outputs/court_keypoints/clip_001_keypoints.json \
+  --frame-stride 15
+```
+
+Run ball detection every frame and smooth short gaps:
+
+```bash
+uv run basketball-ball-detect \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --output object-detection/outputs/ball/clip_001_ball.json \
+  --frame-stride 1
+```
+
+Project tracked players and ball to court coordinates:
+
+```bash
+uv run basketball-project-court \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --tracks object-detection/outputs/tracks/clip_001_sam2_tiny_full_tracks.json \
+  --court-keypoints object-detection/outputs/court_keypoints/clip_001_keypoints.json \
+  --ball object-detection/outputs/ball/clip_001_ball.json \
+  --output object-detection/outputs/court_tracks/clip_001_court_tracks.json \
+  --qa-report object-detection/outputs/reports/clip_001_court_mapping_qa.json
+```
+
+Render a side-by-side video:
+
+```bash
+uv run basketball-visualize-court \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --tracks object-detection/outputs/tracks/clip_001_sam2_tiny_full_tracks.json \
+  --court-tracks object-detection/outputs/court_tracks/clip_001_court_tracks.json \
+  --output object-detection/outputs/videos/clip_001_2d_court_movement.mp4
+```
+
+The court projection uses the bottom-center of each tracked player bbox as the foot location. Ball movement uses the detected ball bbox center, with short missing gaps interpolated.
+
 ## Outputs
 
 - `object-detection/outputs/detections/*_detections.json`: sampled object detections.
 - `object-detection/outputs/tracks/*_tracks.json`: per-frame track IDs, cleaned masks, and boxes.
 - `object-detection/outputs/masks/<clip>/`: one binary PNG mask per frame and track.
 - `object-detection/outputs/crops/<clip>/`: 1 FPS player crops for team clustering.
+- `object-detection/outputs/court_keypoints/*_keypoints.json`: sampled court keypoints.
+- `object-detection/outputs/ball/*_ball.json`: smoothed ball detections.
+- `object-detection/outputs/court_tracks/*_court_tracks.json`: players and ball in court coordinates.
 - `object-detection/outputs/reports/*_tracking_qa.json`: tracking QA counts.
+- `object-detection/outputs/reports/*_court_mapping_qa.json`: court homography and projection QA counts.
 
 ## Tests
 
