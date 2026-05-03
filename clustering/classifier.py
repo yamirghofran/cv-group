@@ -45,15 +45,27 @@ def create_batches(
 class TeamClassifier:
     """Cluster player crops into two teams using SigLIP + UMAP + KMeans."""
 
-    def __init__(self, device: str = "cpu", batch_size: int = 32) -> None:
+    def __init__(
+        self,
+        device: str = "cpu",
+        batch_size: int = 32,
+        n_teams: int = 2,
+        random_state: int = 42,
+    ) -> None:
+        if n_teams < 2:
+            raise ValueError("n_teams must be >= 2")
         self.device = device
         self.batch_size = batch_size
+        self.n_teams = n_teams
+        self.random_state = random_state
         self.features_model = SiglipVisionModel.from_pretrained(
             SIGLIP_MODEL_PATH
         ).to(device)
         self.processor = AutoProcessor.from_pretrained(SIGLIP_MODEL_PATH)
-        self.reducer = umap.UMAP(n_components=3)
-        self.cluster_model = KMeans(n_clusters=2)
+        self.reducer = umap.UMAP(n_components=3, random_state=random_state)
+        self.cluster_model = KMeans(
+            n_clusters=n_teams, n_init="auto", random_state=random_state
+        )
 
     def extract_features(self, crops: list[np.ndarray]) -> np.ndarray:
         """Embed crops to a (N, D) feature matrix using mean-pooled SigLIP features."""

@@ -22,7 +22,7 @@ def test_classifier_public_api() -> None:
     from clustering.classifier import TeamClassifier
 
     init_params = list(inspect.signature(TeamClassifier.__init__).parameters)
-    assert init_params == ["self", "device", "batch_size"]
+    assert init_params == ["self", "device", "batch_size", "n_teams", "random_state"]
 
     fit_params = list(inspect.signature(TeamClassifier.fit).parameters)
     assert fit_params == ["self", "crops"]
@@ -32,6 +32,17 @@ def test_classifier_public_api() -> None:
 
     fit_predict_params = list(inspect.signature(TeamClassifier.fit_predict).parameters)
     assert fit_predict_params == ["self", "crops"]
+
+
+def test_classifier_init_defaults() -> None:
+    """Verify documented defaults without instantiating (no SigLIP download)."""
+    from clustering.classifier import TeamClassifier
+
+    sig = inspect.signature(TeamClassifier.__init__)
+    assert sig.parameters["device"].default == "cpu"
+    assert sig.parameters["batch_size"].default == 32
+    assert sig.parameters["n_teams"].default == 2
+    assert sig.parameters["random_state"].default == 42
 
 
 def test_fit_predict_returns_empty_array_for_empty_input() -> None:
