@@ -15,7 +15,7 @@ wheels/
 
 # Object detection generated/local files
 object-detection/outputs/
-object-detection/data/raw/
+object-detection/data/
 object-detection/checkpoints/
 third_party/sam2/
 
