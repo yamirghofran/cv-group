@@ -22,6 +22,10 @@ dependencies = [
 dev = [
     "pytest>=8.0",
 ]
+train = [
+    "roboflow>=1.1",
+    "ultralytics>=8.3",
+]
 
 [project.scripts]
 basketball-detect = "src.detection:main"
@@ -33,6 +37,9 @@ basketball-court-keypoints = "src.court_keypoints:main"
 basketball-ball-detect = "src.ball_tracking:main"
 basketball-project-court = "src.project_to_court:main"
 basketball-visualize-court = "src.visualize_court:main"
+basketball-court-finetune-download = "src.court_finetuning.download_dataset:main"
+basketball-court-finetune-train = "src.court_finetuning.train:main"
+basketball-court-finetune-predict = "src.court_finetuning.predict:main"
 
 [build-system]
 requires = ["setuptools>=69"]

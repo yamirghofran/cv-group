@@ -53,6 +53,37 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "handoff": {
         "crop_fps": 1.0,
     },
+    "court_keypoints": {
+        "backend": "roboflow",
+        "api_url": "https://serverless.roboflow.com",
+        "model_id": "basketball-court-detection-2",
+        "model_version": 19,
+        "confidence": 30,
+        "overlap": 30,
+        "yolo_weights": "object-detection/court_finetuning/runs/court_yolo11m_pose_v19/weights/best.pt",
+        "yolo_confidence": 0.25,
+        "yolo_device": "auto",
+        "keypoint_confidence": 0.5,
+        "frame_stride": 15,
+        "min_keypoints": 4,
+        "class_id_offset": 0,
+    },
+    "ball_tracking": {
+        "frame_stride": 1,
+        "min_confidence": 0.25,
+        "max_missing_gap": 6,
+        "max_jump_px": 450,
+        "smoothing_window": 3,
+    },
+    "court_projection": {
+        "court_length_ft": 94.0,
+        "court_width_ft": 50.0,
+        "out_of_bounds_margin_ft": 5.0,
+    },
+    "court_visualization": {
+        "panel_height": 720,
+        "trail_length": 45,
+    },
 }
 
 

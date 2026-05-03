@@ -152,6 +152,51 @@ uv run basketball-visualize-court \
 
 The court projection uses the bottom-center of each tracked player bbox as the foot location. Ball movement uses the detected ball bbox center, with short missing gaps interpolated.
 
+## Local Court Keypoint Fine-Tuning
+
+The court keypoint API can be replaced by a local YOLO pose checkpoint trained on `basketball-court-detection-2`.
+
+Install train dependencies:
+
+```bash
+uv sync --extra train
+```
+
+Download Roboflow's court keypoint dataset:
+
+```bash
+uv run basketball-court-finetune-download
+```
+
+Train the recommended baseline:
+
+```bash
+uv run basketball-court-finetune-train \
+  --data object-detection/data/court-yolo/basketball-court-detection-2-19/data.yaml \
+  --model yolo11m-pose.pt \
+  --epochs 80 \
+  --imgsz 640 \
+  --batch 16 \
+  --patience 20 \
+  --device 0 \
+  --name court_yolo11m_pose_v19
+```
+
+Run local YOLO court keypoints in the existing mapping pipeline:
+
+```bash
+uv run basketball-court-keypoints \
+  --backend yolo \
+  --weights object-detection/court_finetuning/runs/court_yolo11m_pose_v19/weights/best.pt \
+  --device 0 \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --output object-detection/outputs/court_keypoints/clip_001_yolo_keypoints.json \
+  --debug-frame-dir object-detection/outputs/debug_court_keypoints/clip_001_yolo \
+  --frame-stride 15
+```
+
+See `object-detection/src/court_finetuning/README.md` for smoke tests and prediction commands.
+
 ## Outputs
 
 - `object-detection/outputs/detections/*_detections.json`: sampled object detections.
