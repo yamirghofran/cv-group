@@ -1,6 +1,7 @@
 # Python-generated files
 __pycache__/
 *.py[oc]
+.pytest_cache/
 build/
 dist/
 wheels/
@@ -8,3 +9,17 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Local secrets
+.env
+
+# Object detection generated/local files
+object-detection/outputs/
+object-detection/data/raw/
+object-detection/checkpoints/
+third_party/sam2/
+
+# Other files
+context/
+.DS_Store
+
