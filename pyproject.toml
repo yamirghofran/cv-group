@@ -1,7 +1,42 @@
 [project]
 name = "cv-group"
 version = "0.1.0"
-description = "Add your description here"
+description = "Basketball computer vision pipeline"
 readme = "README.md"
-requires-python = ">=3.14"
-dependencies = []
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "numpy>=1.26",
+    "opencv-python>=4.9",
+    "pydantic>=2.6",
+    "python-dotenv>=1.0",
+    "pyyaml>=6.0",
+    "requests>=2.31",
+    "scipy>=1.11",
+    "supervision>=0.20",
+    "torch>=2.1",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+basketball-detect = "src.detection:main"
+basketball-track = "src.tracking:main"
+basketball-visualize-detections = "src.visualize_detections:main"
+basketball-visualize-tracks = "src.visualize_tracks:main"
+basketball-export-crops = "src.export_crops:main"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["object-detection"]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["object-detection/tests"]
+pythonpath = ["object-detection"]
