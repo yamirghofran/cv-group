@@ -22,6 +22,26 @@ Set `ROBOFLOW_API_KEY` in `.env`.
 SAM2 is not bundled by PyPI in a stable way for every platform. Install it from Meta's repository or your course-provided setup, then set the checkpoint and config paths:
 
 ```bash
+git clone https://github.com/facebookresearch/sam2.git object-detection/sam2
+SAM2_BUILD_CUDA=0 uv pip install -e "object-detection/sam2"
+mkdir -p object-detection/checkpoints
+cd object-detection/sam2/checkpoints
+./download_ckpts.sh
+cd ../../..
+cp object-detection/sam2/checkpoints/sam2.1_hiera_large.pt object-detection/checkpoints/
+```
+
+`SAM2_BUILD_CUDA=0` is recommended on macOS/MPS machines because the optional CUDA extension needs NVIDIA CUDA.
+
+Verify the install:
+
+```bash
+uv run python -c "import sam2, torch, torchvision; print('sam2 ok'); print(torch.__version__, torchvision.__version__)"
+```
+
+Then run real SAM2 tracking:
+
+```bash
 uv run basketball-track \
   --video object-detection/data/raw/clip_001.mp4 \
   --detections object-detection/outputs/detections/clip_001_detections.json \

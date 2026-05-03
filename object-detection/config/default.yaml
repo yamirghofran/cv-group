@@ -32,7 +32,7 @@ detection:
 
 tracking:
   backend: "sam2"
-  sam2_checkpoint: "checkpoints/sam2.1_hiera_large.pt"
+  sam2_checkpoint: "object-detection/checkpoints/sam2.1_hiera_large.pt"
   sam2_model_cfg: "configs/sam2.1/sam2.1_hiera_l.yaml"
   device: "auto"
 
