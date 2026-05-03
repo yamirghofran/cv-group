@@ -166,7 +166,7 @@ def train(
         if vl_acc > best_val_acc:
             best_val_acc = vl_acc
             save_checkpoint(output_path, model, train_ds.class_to_idx, img_size, vl_acc)
-            tqdm.write(f"  → saved (val_acc={vl_acc:.4f})")
+            tqdm.write(f"  -> saved (val_acc={vl_acc:.4f})")
 
     print(f"Done — best val_acc={best_val_acc:.4f}")
     return {"best_val_acc": best_val_acc, "history": history}

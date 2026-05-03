@@ -16,6 +16,9 @@ dependencies = [
     "torch>=2.1",
     "torchvision>=0.20.1",
     "tqdm>=4.66",
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    "pillow>=10.0",
 ]
 
 [project.optional-dependencies]
@@ -29,15 +32,19 @@ basketball-track = "src.tracking:main"
 basketball-visualize-detections = "src.visualize_detections:main"
 basketball-visualize-tracks = "src.visualize_tracks:main"
 basketball-export-crops = "src.export_crops:main"
+basketball-train-resnet = "jersey_numbers.ocr.resnet:main"
+basketball-match-numbers = "jersey_numbers.matching.ios:main"
+basketball-eval-resnet = "evaluation.eval_resnet:main"
+basketball-eval-matching = "evaluation.eval_matching:main"
 
 [build-system]
 requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["object-detection"]
-include = ["src*"]
+where = ["object-detection", "numbers"]
+include = ["src*", "jersey_numbers*", "evaluation*"]
 
 [tool.pytest.ini_options]
-testpaths = ["object-detection/tests"]
-pythonpath = ["object-detection"]
+testpaths = ["object-detection/tests", "numbers/tests"]
+pythonpath = ["object-detection", "numbers"]

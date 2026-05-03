@@ -1,10 +1,3 @@
-"""Evaluate a trained ResNet-32 checkpoint on the test split.
-
-Outputs:
-  - Overall and per-class accuracy printed to stdout
-  - Class imbalance report (count vs accuracy per class)
-  - Confusion matrix saved as PNG
-"""
 from __future__ import annotations
 
 import argparse
