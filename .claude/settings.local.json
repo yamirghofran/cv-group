@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(file /Users/borisgans/IE/computer-vision/group-project/cv-group/object-detection/data/yolov8/basketball_cv_project-1/*)",
+      "Bash(grep -E \"^\\(runs|yolo11s\\\\.pt\\)$\")",
+      "Bash(git check-ignore *)"
+    ]
+  }
+}

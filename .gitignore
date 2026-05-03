@@ -15,12 +15,16 @@ wheels/
 
 # Object detection generated/local files
 object-detection/outputs/
-object-detection/data/raw/
+object-detection/data/
 object-detection/checkpoints/
 third_party/sam2/
+
+# YOLO finetuning artifacts
+object-detection/finetuning/runs/
+object-detection/finetuning/checkpoints/
+runs/
+*.pt
 
 # Other files
 context/
 .DS_Store
-
-# docs/context.md
