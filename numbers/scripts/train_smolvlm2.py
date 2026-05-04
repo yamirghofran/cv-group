@@ -112,7 +112,11 @@ def train(
     device_str: str = "auto",
 ) -> None:
     from peft import LoraConfig, get_peft_model
-    from transformers import AutoModelForVision2Seq, AutoProcessor, Trainer, TrainingArguments
+    try:
+        from transformers import AutoModelForVision2Seq
+    except ImportError:
+        from transformers import AutoModelForImageTextToText as AutoModelForVision2Seq
+    from transformers import AutoProcessor, Trainer, TrainingArguments
 
     device = resolve_device(device_str)
     print(f"Using device: {device}")

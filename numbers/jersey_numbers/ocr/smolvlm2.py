@@ -28,7 +28,11 @@ class SmolVLM2OCR:
 
     def __init__(self, checkpoint_path: Path, device_str: str = "auto") -> None:
         from peft import PeftModel
-        from transformers import AutoModelForVision2Seq, AutoProcessor
+        try:
+            from transformers import AutoModelForVision2Seq
+        except ImportError:
+            from transformers import AutoModelForImageTextToText as AutoModelForVision2Seq
+        from transformers import AutoProcessor
 
         self.device = resolve_device(device_str)
         checkpoint_path = Path(checkpoint_path)
