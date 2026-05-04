@@ -2,14 +2,24 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import torch
+import transformers
 from PIL import Image
+from peft import LoraConfig, get_peft_model
 from torch.utils.data import Dataset
 from torchvision import transforms
+from tqdm import tqdm
+from transformers import AutoProcessor, Trainer, TrainingArguments
+
+try:
+    from transformers import AutoModelForVision2Seq
+except ImportError:
+    from transformers import AutoModelForImageTextToText as AutoModelForVision2Seq
 
 from jersey_numbers.ocr.smolvlm2 import DEFAULT_BASE_MODEL, resolve_device
 
@@ -26,40 +36,84 @@ class JerseyNumberVQADataset(Dataset):
         self.processor = processor
         self.augment = augment
 
+        if augment:
+            self._cache_dir = None
+            self._prompt_len = self._compute_prompt_len()
+        else:
+            self._cache_dir = jsonl_path.parent / ".cache" / jsonl_path.stem
+            self._build_cache()
+            self.processor = None
+
+    def _build_cache(self) -> None:
+        if self._cache_dir.exists() and len(list(self._cache_dir.glob("*.pt"))) == len(self.samples):
+            print(f"  Cache hit: {self._cache_dir}")
+            return
+
+        self._cache_dir.mkdir(parents=True, exist_ok=True)
+        print(f"  Pre-tokenizing {len(self.samples)} samples → {self._cache_dir}")
+
+        prompt_len = self._compute_prompt_len()
+        for idx, entry in enumerate(tqdm(self.samples, desc="Caching")):
+            image = Image.open(entry["image"]).convert("RGB")
+
+            full_text = self.processor.apply_chat_template(
+                [
+                    {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": entry["prompt"]}]},
+                    {"role": "assistant", "content": [{"type": "text", "text": entry["answer"]}]},
+                ],
+                tokenize=False,
+                add_generation_prompt=False,
+            )
+
+            full_inputs = self.processor(text=full_text, images=[image], return_tensors="pt")
+
+            input_ids = full_inputs["input_ids"].squeeze(0)
+            attention_mask = full_inputs["attention_mask"].squeeze(0)
+            labels = input_ids.clone()
+            labels[:prompt_len] = -100
+
+            sample = {"input_ids": input_ids, "attention_mask": attention_mask, "labels": labels}
+            for key in full_inputs:
+                if key not in ("input_ids", "attention_mask"):
+                    sample[key] = full_inputs[key].squeeze(0)
+
+            torch.save(sample, self._cache_dir / f"{idx:06d}.pt")
+
+    def _compute_prompt_len(self) -> int:
+        prompt = self.samples[0]["prompt"]
+        prompt_text = self.processor.apply_chat_template(
+            [{"role": "user", "content": [{"type": "image"}, {"type": "text", "text": prompt}]}],
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+        dummy = Image.new("RGB", (224, 224))
+        return self.processor(text=prompt_text, images=[dummy], return_tensors="pt")["input_ids"].shape[1]
+
     def __len__(self) -> int:
         return len(self.samples)
 
     def __getitem__(self, idx: int) -> dict:
-        entry = self.samples[idx]
-        image = Image.open(entry["image"]).convert("RGB")
-        if self.augment:
-            image = _AUGMENT(image)
-        prompt = entry["prompt"]
-        answer = entry["answer"]
+        if self._cache_dir is not None:
+            return torch.load(self._cache_dir / f"{idx:06d}.pt", weights_only=True)
 
-        full_messages = [
-            {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": prompt}]},
-            {"role": "assistant", "content": [{"type": "text", "text": answer}]},
-        ]
-        prompt_messages = [
-            {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": prompt}]},
-        ]
+        entry = self.samples[idx]
+        image = _AUGMENT(Image.open(entry["image"]).convert("RGB"))
 
         full_text = self.processor.apply_chat_template(
-            full_messages, tokenize=False, add_generation_prompt=False
-        )
-        prompt_text = self.processor.apply_chat_template(
-            prompt_messages, tokenize=False, add_generation_prompt=True
+            [
+                {"role": "user", "content": [{"type": "image"}, {"type": "text", "text": entry["prompt"]}]},
+                {"role": "assistant", "content": [{"type": "text", "text": entry["answer"]}]},
+            ],
+            tokenize=False,
+            add_generation_prompt=False,
         )
 
         full_inputs = self.processor(text=full_text, images=[image], return_tensors="pt")
-        prompt_inputs = self.processor(text=prompt_text, images=[image], return_tensors="pt")
 
-        prompt_len = prompt_inputs["input_ids"].shape[1]
         input_ids = full_inputs["input_ids"].squeeze(0)
         attention_mask = full_inputs["attention_mask"].squeeze(0)
         labels = input_ids.clone()
-        labels[:prompt_len] = -100
+        labels[:self._prompt_len] = -100
 
         result = {"input_ids": input_ids, "attention_mask": attention_mask, "labels": labels}
         for key in full_inputs:
@@ -107,23 +161,19 @@ def train(
     batch_size: int = 4,
     grad_accum_steps: int = 8,
     lr: float = 2e-4,
-    lora_r: int = 16,
-    lora_alpha: int = 32,
+    lora_r: int = 8,
+    lora_alpha: int = 16,
     device_str: str = "auto",
 ) -> None:
-    from peft import LoraConfig, get_peft_model
-    try:
-        from transformers import AutoModelForVision2Seq
-    except ImportError:
-        from transformers import AutoModelForImageTextToText as AutoModelForVision2Seq
-    from transformers import AutoProcessor, Trainer, TrainingArguments
-
     device = resolve_device(device_str)
     print(f"Using device: {device}")
 
     bf16, fp16 = _detect_precision(device)
     dtype = torch.bfloat16 if bf16 else torch.float16 if fp16 else torch.float32
     print(f"Precision: {'bf16' if bf16 else 'fp16' if fp16 else 'fp32'}")
+
+    transformers.logging.set_verbosity_error()
+    logging.getLogger("PIL").setLevel(logging.WARNING)
 
     print(f"Loading processor and base model: {base_model}")
     processor = AutoProcessor.from_pretrained(base_model)
@@ -167,6 +217,8 @@ def train(
         logging_steps=20,
         remove_unused_columns=False,
         report_to="none",
+        dataloader_num_workers=4,
+        dataloader_pin_memory=True,
     )
 
     collator = VLMDataCollator(pad_token_id=processor.tokenizer.pad_token_id)
@@ -203,8 +255,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--grad-accum-steps", type=int, default=8, help="Gradient accumulation steps (effective batch = batch-size * grad-accum-steps).")
     parser.add_argument("--lr", type=float, default=2e-4)
-    parser.add_argument("--lora-r", type=int, default=16)
-    parser.add_argument("--lora-alpha", type=int, default=32)
+    parser.add_argument("--lora-r", type=int, default=8)
+    parser.add_argument("--lora-alpha", type=int, default=16)
     parser.add_argument("--device", default="auto", help="auto | cpu | cuda | mps")
     return parser
 
