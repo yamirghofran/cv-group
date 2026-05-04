@@ -19,6 +19,9 @@ dependencies = [
     "matplotlib>=3.8",
     "seaborn>=0.13",
     "pillow>=10.0",
+    "transformers>=4.45",
+    "peft>=0.12",
+    "roboflow>=1.1",
 ]
 
 [project.optional-dependencies]
@@ -33,9 +36,11 @@ basketball-visualize-detections = "src.visualize_detections:main"
 basketball-visualize-tracks = "src.visualize_tracks:main"
 basketball-export-crops = "src.export_crops:main"
 basketball-train-resnet = "jersey_numbers.ocr.resnet:main"
+basketball-train-smolvlm2 = "scripts.train_smolvlm2:main"
 basketball-match-numbers = "jersey_numbers.matching.ios:main"
 basketball-eval-resnet = "evaluation.eval_resnet:main"
 basketball-eval-matching = "evaluation.eval_matching:main"
+basketball-eval-smolvlm2 = "evaluation.eval_smolvlm2:main"
 
 [build-system]
 requires = ["setuptools>=69"]
@@ -43,7 +48,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["object-detection", "numbers"]
-include = ["src*", "jersey_numbers*", "evaluation*"]
+include = ["src*", "jersey_numbers*", "evaluation*", "scripts*"]
 
 [tool.pytest.ini_options]
 testpaths = ["object-detection/tests", "numbers/tests"]

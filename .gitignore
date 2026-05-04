@@ -23,3 +23,5 @@ third_party/sam2/
 context/
 .DS_Store
 
+numbers/data/
+numbers/checkpoints/
