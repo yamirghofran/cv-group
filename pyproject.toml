@@ -37,9 +37,14 @@ basketball-visualize-detections = "src.visualize_detections:main"
 basketball-visualize-tracks = "src.visualize_tracks:main"
 basketball-export-crops = "src.export_crops:main"
 basketball-train-resnet = "jersey_numbers.ocr.resnet:main"
+<<<<<<< HEAD
 basketball-train-smolvlm2 = "scripts.train_smolvlm2:main"
+=======
+basketball-train-resnet18 = "jersey_numbers.ocr.resnet18:main"
+>>>>>>> origin/feat/train-resnet
 basketball-match-numbers = "jersey_numbers.matching.ios:main"
 basketball-eval-resnet = "evaluation.eval_resnet:main"
+basketball-eval-resnet18 = "evaluation.eval_resnet18:main"
 basketball-eval-matching = "evaluation.eval_matching:main"
 basketball-eval-smolvlm2 = "evaluation.eval_smolvlm2:main"
 
