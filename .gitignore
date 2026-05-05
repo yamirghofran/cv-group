@@ -19,6 +19,8 @@ object-detection/data/raw/
 object-detection/checkpoints/
 third_party/sam2/
 
+numbers/data/
+
 # Other files
 context/
 .DS_Store
