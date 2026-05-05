@@ -32,3 +32,6 @@ runs/
 # Other files
 context/
 .DS_Store
+
+# Per-machine Claude Code permissions
+.claude/settings.local.json

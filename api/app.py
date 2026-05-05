@@ -69,7 +69,7 @@ async def process(request: Request, video: UploadFile = File(...)) -> Any:
             detail=f"Unsupported file type {suffix!r}. Allowed: {sorted(SUPPORTED_EXTENSIONS)}",
         )
 
-    upload_path = _save_upload(video, settings)
+    upload_path = await _save_upload(video, settings)
 
     try:
         result: ProcessResult = process_video(
@@ -88,7 +88,7 @@ async def process(request: Request, video: UploadFile = File(...)) -> Any:
     )
 
 
-def _save_upload(upload: UploadFile, settings: ApiSettings) -> Path:
+async def _save_upload(upload: UploadFile, settings: ApiSettings) -> Path:
     ensure_dir(settings.work_dir)
     suffix = Path(upload.filename or "").suffix.lower() or ".mp4"
     max_bytes = settings.max_upload_mb * 1024 * 1024
@@ -98,7 +98,7 @@ def _save_upload(upload: UploadFile, settings: ApiSettings) -> Path:
         copied = 0
         chunk_size = 1024 * 1024
         while True:
-            chunk = upload.file.read(chunk_size)
+            chunk = await upload.read(chunk_size)
             if not chunk:
                 break
             copied += len(chunk)
