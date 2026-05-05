@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 
 if TYPE_CHECKING:
-    from jersey_numbers.ocr.resnet import ResNetOCR
+    from jersey_numbers.ocr.resnet34 import ResNetOCR
 
 
 def compute_ios(player_mask: np.ndarray, number_bbox: list[float]) -> float:
@@ -193,7 +193,7 @@ def main(argv: list[str] | None = None) -> int:
 
     ocr_model = None
     if args.checkpoint:
-        from jersey_numbers.ocr.resnet import ResNetOCR
+        from jersey_numbers.ocr.resnet34 import ResNetOCR
         ocr_model = ResNetOCR(Path(args.checkpoint), device_str=args.device)
 
     result = run_matching(
@@ -211,7 +211,7 @@ def main(argv: list[str] | None = None) -> int:
         f.write("\n")
 
     ocr_str = f" + OCR ({args.checkpoint})" if args.checkpoint else " (no OCR)"
-    print(f"Matched {result['total_matches']} numbers{ocr_str} → {args.output}")
+    print(f"Matched {result['total_matches']} numbers{ocr_str}: {args.output}")
     return 0
 
 

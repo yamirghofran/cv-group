@@ -9,7 +9,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets
 
-from jersey_numbers.ocr.resnet import load_checkpoint, _transforms
+from jersey_numbers.ocr.resnet34 import load_checkpoint, _transforms
 
 
 def evaluate(
@@ -28,7 +28,7 @@ def evaluate(
     dataset = datasets.ImageFolder(split_dir, transform=_transforms(img_size, augment=False))
     loader = DataLoader(dataset, batch_size=64, shuffle=False, num_workers=2)
 
-    from jersey_numbers.ocr.resnet import resolve_device
+    from jersey_numbers.ocr.resnet34 import resolve_device
     device = resolve_device(device_str)
     model.to(device).eval()
 
@@ -55,6 +55,16 @@ def evaluate(
 
     per_class_acc = np.where(counts > 0, per_class_correct / np.maximum(counts, 1), float("nan"))
 
+    # Macro accuracy: mean per-class (equal weight per class regardless of size)
+    macro_acc = float(np.nanmean(per_class_acc))
+    # Weighted accuracy: inverse-frequency weighted (rare classes count more)
+    inv_freq = np.where(counts > 0, 1.0 / counts, 0.0)
+    inv_freq = inv_freq / inv_freq.sum()
+    weighted_acc = float(np.nansum(np.where(counts > 0, per_class_acc * inv_freq, 0.0)))
+
+    print(f"Macro  accuracy (mean per-class):       {macro_acc:.4f} ({macro_acc * 100:.2f}%)")
+    print(f"Weighted accuracy (inv-freq per-class): {weighted_acc:.4f} ({weighted_acc * 100:.2f}%)")
+
     print(f"\n{'Class':>6} {'Count':>6} {'Accuracy':>10}")
     print("-" * 26)
     for i in range(num_classes):
@@ -65,13 +75,15 @@ def evaluate(
     total = len(all_labels)
     rare = [class_names[i] for i in range(num_classes) if counts[i] > 0 and counts[i] / total < 0.01]
     if rare:
-        print(f"\nRare classes (<1% of test set): {rare}")
+        print(f"\nRare classes (<1% of eval set): {rare}")
 
     # Confusion matrix
     _plot_confusion_matrix(all_labels, all_preds, class_names, output_dir)
 
     results = {
         "overall_accuracy": overall_acc,
+        "macro_accuracy": macro_acc,
+        "weighted_accuracy": weighted_acc,
         "per_class": {
             class_names[i]: {
                 "count": int(counts[i]),
@@ -86,7 +98,7 @@ def evaluate(
         out.parent.mkdir(parents=True, exist_ok=True)
         with out.open("w") as f:
             json.dump(results, f, indent=2)
-        print(f"\nSaved results → {out}")
+        print(f"\nSaved results -> {out}")
 
     return results
 
@@ -101,7 +113,7 @@ def _plot_confusion_matrix(
         import matplotlib.pyplot as plt
         import seaborn as sns
     except ImportError:
-        print("matplotlib/seaborn not installed — skipping confusion matrix plot.")
+        print("skipping confusion matrix plot.")
         return
 
     n = len(class_names)
@@ -132,7 +144,7 @@ def _plot_confusion_matrix(
         out = output_dir / "confusion_matrix.png"
         out.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(out, dpi=150)
-        print(f"Saved confusion matrix → {out}")
+        print(f"Saved confusion matrix -> {out}")
     else:
         plt.show()
     plt.close()
@@ -142,7 +154,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Evaluate ResNet-32 jersey number classifier.")
     parser.add_argument("--checkpoint", required=True, help="Path to trained .pth checkpoint.")
     parser.add_argument("--data", required=True, help="Dataset root with train/val/test subdirs.")
-    parser.add_argument("--split", default="test", choices=["train", "val", "test"])
+    parser.add_argument("--split", default="test", choices=["train", "val", "test", "eval"])
     parser.add_argument("--output-dir", help="Directory for confusion matrix PNG and JSON results.")
     parser.add_argument("--device", default="auto")
     return parser

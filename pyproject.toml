@@ -44,7 +44,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["object-detection", "numbers"]
-include = ["src*", "jersey_numbers*", "evaluation*"]
+include = ["src*", "jersey_numbers*", "evaluation*", "scripts*"]
 
 [tool.pytest.ini_options]
 testpaths = ["object-detection/tests", "numbers/tests"]

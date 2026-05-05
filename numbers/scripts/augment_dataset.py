@@ -105,7 +105,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Offline augmentation: expand training set.")
     parser.add_argument("--src", required=True, help="Source dataset root (with train/val/test dirs).")
     parser.add_argument("--dst", required=True, help="Output dataset root.")
-    parser.add_argument("--copies", type=int, default=9, help="Augmented copies per image (default 9 → 10x dataset).")
+    parser.add_argument("--copies", type=int, default=9, help="Augmented copies per image.")
     args = parser.parse_args(argv)
 
     src = Path(args.src)
@@ -120,7 +120,7 @@ def main(argv: list[str] | None = None) -> int:
         copies = args.copies if split == "train" else 0
         print(f"Processing {split} (copies={copies})...")
         n = expand_split(split_src, split_dst, copies=copies)
-        print(f"  → {n} images in {split_dst}")
+        print(f" : {n} images in {split_dst}")
 
     print("Done.")
     return 0
