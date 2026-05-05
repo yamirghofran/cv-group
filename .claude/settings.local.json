@@ -6,7 +6,10 @@
       "Bash(git check-ignore *)",
       "Bash(uv run *)",
       "Bash(uv sync *)",
-      "Bash(uv pip *)"
+      "Bash(uv pip *)",
+      "Bash(SAM2_BUILD_CUDA=0 uv sync --extra sam2 --dry-run)",
+      "Bash(kill 47616 47615)",
+      "Bash(kill -9 47616 47615)"
     ]
   }
 }

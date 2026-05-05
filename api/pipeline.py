@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from src.detection import draw_detection_frame
 from src.roboflow_client import normalize_roboflow_predictions
 from src.schemas import DetectionFrame, DetectionOutput
 from src.tracking import build_track_output, load_frame0_boxes
@@ -12,6 +13,7 @@ from src.utils import (
     ensure_dir,
     frame_timestamp,
     iter_video_frames,
+    open_video_writer,
     should_process_frame,
     video_metadata,
     write_json,
@@ -29,7 +31,7 @@ class ProcessResult:
     detections_path: Path
     classes_seen: list[str]
     frames_sampled: int
-    annotated_video_path: Path | None
+    annotated_video_path: Path
     sam2_used: bool
     extras: dict[str, Any] = field(default_factory=dict)
 
@@ -58,7 +60,7 @@ def process_video(
     detections_path = work_dir / "detections.json"
     write_json(detections_path, detection_output.model_dump(mode="json"))
 
-    annotated_video_path: Path | None = None
+    annotated_video_path = work_dir / "annotated.mp4"
     if sam2_predictor is not None:
         annotated_video_path = _run_tracking_and_render(
             video_path=video_path,
@@ -66,6 +68,12 @@ def process_video(
             work_dir=work_dir,
             sam2_predictor=sam2_predictor,
             settings=settings,
+        )
+    else:
+        _render_yolo_overlay_video(
+            video_path=video_path,
+            detection_output=detection_output,
+            output_path=annotated_video_path,
         )
 
     return ProcessResult(
@@ -116,6 +124,35 @@ def _run_yolo_detection(
         frames=frames,
         classes_seen=sorted(classes_seen),
     )
+
+
+def _render_yolo_overlay_video(
+    *,
+    video_path: Path,
+    detection_output: DetectionOutput,
+    output_path: Path,
+) -> Path:
+    detections_by_frame: dict[int, list[dict[str, Any]]] = {
+        frame.frame_id: [det.model_dump(mode="json") for det in frame.detections]
+        for frame in detection_output.frames
+    }
+
+    writer = open_video_writer(
+        output_path, detection_output.fps, detection_output.width, detection_output.height
+    )
+    # Carry the most recent sampled detections forward so the overlay reads as
+    # continuous instead of flashing once every frame_stride frames.
+    last_detections: list[dict[str, Any]] = []
+    try:
+        for frame_id, frame in iter_video_frames(video_path):
+            if frame_id in detections_by_frame:
+                last_detections = detections_by_frame[frame_id]
+            draw_detection_frame(frame, last_detections)
+            writer.write(frame)
+    finally:
+        writer.release()
+
+    return output_path
 
 
 def _run_tracking_and_render(

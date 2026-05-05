@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import shutil
 import tempfile
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse
 
 from src.utils import ensure_dir
 from src.yolo_client import YoloLocalClient, YoloLocalSettings
@@ -21,6 +21,7 @@ SUPPORTED_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv"}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    load_dotenv()
     settings = ApiSettings.from_env()
     ensure_dir(settings.work_dir)
 
@@ -45,7 +46,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Basketball CV API", lifespan=lifespan)
+app = FastAPI(title="Basketball CV API", lifespan=lifespan, redirect_slashes=False)
 
 
 @app.get("/healthz")
@@ -80,28 +81,10 @@ async def process(request: Request, video: UploadFile = File(...)) -> Any:
     finally:
         upload_path.unlink(missing_ok=True)
 
-    if result.annotated_video_path is not None:
-        return FileResponse(
-            path=str(result.annotated_video_path),
-            media_type="video/mp4",
-            filename=f"{result.job_id}.mp4",
-        )
-
-    # TODO(detector-only viz): when SAM2 is disabled, render an mp4 with YOLO
-    # bounding boxes drawn per frame and return it here instead of this JSON
-    # summary. The pieces already exist — src/detection.py:draw_detection_frame
-    # and src/utils.py:open_video_writer — the only open question is whether to
-    # draw on every frame or only sampled frames. Wire it into pipeline.py and
-    # set ProcessResult.annotated_video_path so this branch falls through.
-    return JSONResponse(
-        {
-            "job_id": result.job_id,
-            "frames_sampled": result.frames_sampled,
-            "classes_seen": result.classes_seen,
-            "sam2_used": False,
-            "detections_path": str(result.detections_path),
-            "note": "SAM2 disabled. Bounding-box-rendered video is a future deliverable.",
-        }
+    return FileResponse(
+        path=str(result.annotated_video_path),
+        media_type="video/mp4",
+        filename=f"{result.job_id}.mp4",
     )
 
 
