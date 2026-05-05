@@ -39,7 +39,7 @@ def convert(raw_dir: Path, out_dir: Path) -> dict[str, int]:
 
         images_dir = split_dir / "images" if (split_dir / "images").exists() else split_dir
 
-        print(f"  Converting {raw_split} → {out_split} using {jsonl_file.name}")
+        print(f"  Converting {raw_split} -> {out_split} using {jsonl_file.name}")
 
         n = 0
         with jsonl_file.open(encoding="utf-8") as f:
@@ -140,7 +140,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Downloading {WORKSPACE}/{PROJECT} v{VERSION} ...")
     download(args.api_key, raw_dir)
 
-    print("\nConverting JSONL → ImageFolder structure ...")
+    print("\nConverting JSONL -> ImageFolder structure ...")
     counts = convert(raw_dir, out_dir)
 
     print(f"\nDone. Dataset at: {out_dir}")
