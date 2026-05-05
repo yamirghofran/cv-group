@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 from tqdm import tqdm
 
-from jersey_numbers.ocr.smolvlm2 import SmolVLM2OCR
+from jersey_numbers.ocr.smolvlm2 import RoboflowOCR, SmolVLM2OCR
 
 
 def _load_jsonl(jsonl_path: Path) -> tuple[list[str], list[str]]:
@@ -26,17 +26,26 @@ def _load_jsonl(jsonl_path: Path) -> tuple[list[str], list[str]]:
 
 
 def evaluate(
-    checkpoint_path: Path,
     data_dir: Path,
     split: str = "test",
     output_dir: Path | None = None,
+    checkpoint_path: Path | None = None,
     device_str: str = "auto",
+    roboflow_model: str | None = None,
+    roboflow_api_key: str | None = None,
 ) -> dict:
     jsonl_path = data_dir / f"{split}.jsonl"
     if not jsonl_path.exists():
         raise FileNotFoundError(f"JSONL file not found: {jsonl_path}")
 
-    model = SmolVLM2OCR(checkpoint_path, device_str=device_str)
+    if roboflow_model:
+        if not roboflow_api_key:
+            raise ValueError("--roboflow-api-key is required when using --roboflow-model")
+        model = RoboflowOCR(roboflow_model, api_key=roboflow_api_key)
+    elif checkpoint_path:
+        model = SmolVLM2OCR(checkpoint_path, device_str=device_str)
+    else:
+        raise ValueError("Provide either --checkpoint or --roboflow-model")
 
     image_paths, true_labels = _load_jsonl(jsonl_path)
     class_names = sorted(set(true_labels))
@@ -162,8 +171,10 @@ def _plot_confusion_matrix(
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Evaluate fine-tuned SmolVLM2 jersey number classifier.")
-    parser.add_argument("--checkpoint", required=True, help="Path to fine-tuned checkpoint directory.")
+    parser = argparse.ArgumentParser(description="Evaluate SmolVLM2 jersey number classifier.")
+    parser.add_argument("--checkpoint", help="Path to fine-tuned LoRA checkpoint directory.")
+    parser.add_argument("--roboflow-model", help="Roboflow model ID (e.g. basketball-jersey-numbers-ocr/3).")
+    parser.add_argument("--roboflow-api-key", help="Roboflow API key (or set ROBOFLOW_API_KEY env var).")
     parser.add_argument("--data", required=True, help="Dataset root with train/val/test subdirs.")
     parser.add_argument("--split", default="test", choices=["train", "val", "test"])
     parser.add_argument("--output-dir", help="Directory for confusion matrix PNG and JSON results.")
@@ -172,13 +183,17 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    import os
     args = _build_parser().parse_args(argv)
+    api_key = args.roboflow_api_key or os.getenv("ROBOFLOW_API_KEY")
     evaluate(
-        checkpoint_path=Path(args.checkpoint),
         data_dir=Path(args.data),
         split=args.split,
         output_dir=Path(args.output_dir) if args.output_dir else None,
+        checkpoint_path=Path(args.checkpoint) if args.checkpoint else None,
         device_str=args.device,
+        roboflow_model=args.roboflow_model,
+        roboflow_api_key=api_key,
     )
     return 0
 

@@ -91,6 +91,25 @@ class SmolVLM2OCR:
         return [self.predict(img) for img in bgr_images]
 
 
+class RoboflowOCR:
+    """Wrapper around a Roboflow-hosted SmolVLM2 model with the same interface as SmolVLM2OCR."""
+
+    def __init__(self, model_id: str, api_key: str) -> None:
+        from inference import get_model
+        self._model = get_model(model_id, api_key=api_key)
+
+    def predict(self, bgr_image: np.ndarray) -> tuple[str, float]:
+        rgb = bgr_image[..., ::-1].copy()
+        result = self._model.infer(rgb, prompt=PROMPT)
+        raw = result[0].response.strip() if result else ""
+        match = re.search(r"\d+", raw)
+        label = match.group().lstrip("0") or "0" if match else "unknown"
+        return label, 1.0
+
+    def predict_batch(self, bgr_images: list[np.ndarray]) -> list[tuple[str, float]]:
+        return [self.predict(img) for img in bgr_images]
+
+
 def _load_base_model_name(checkpoint_path: Path) -> str:
     adapter_config = checkpoint_path / "adapter_config.json"
     if adapter_config.exists():

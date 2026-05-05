@@ -5,11 +5,8 @@ import json
 import os
 import shutil
 from pathlib import Path
-
 from PIL import Image as PILImage
-
 from dotenv import load_dotenv
-
 from jersey_numbers.ocr.smolvlm2 import PROMPT
 
 load_dotenv()

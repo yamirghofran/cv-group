@@ -157,8 +157,8 @@ def train(
     jsonl_dir: Path,
     output_dir: Path,
     base_model: str = DEFAULT_BASE_MODEL,
-    epochs: int = 3,
-    batch_size: int = 4,
+    epochs: int = 2,
+    batch_size: int = 2,
     grad_accum_steps: int = 8,
     lr: float = 2e-4,
     lora_r: int = 8,
@@ -214,11 +214,12 @@ def train(
         eval_strategy="epoch",
         save_strategy="epoch",
         load_best_model_at_end=True,
-        logging_steps=20,
+        logging_steps=1,
         remove_unused_columns=False,
         report_to="none",
-        dataloader_num_workers=4,
+        dataloader_num_workers=2,
         dataloader_pin_memory=True,
+        disable_tqdm=False,
     )
 
     collator = VLMDataCollator(pad_token_id=processor.tokenizer.pad_token_id)
@@ -251,8 +252,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--data", required=True, help="JSONL directory (output of prepare_dataset_smolvlm2.py).")
     parser.add_argument("--output", required=True, help="Checkpoint output directory.")
     parser.add_argument("--base-model", default=DEFAULT_BASE_MODEL, help="HuggingFace base model name.")
-    parser.add_argument("--epochs", type=int, default=3)
-    parser.add_argument("--batch-size", type=int, default=4)
+    parser.add_argument("--epochs", type=int, default=2)
+    parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--grad-accum-steps", type=int, default=8, help="Gradient accumulation steps (effective batch = batch-size * grad-accum-steps).")
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--lora-r", type=int, default=8)
