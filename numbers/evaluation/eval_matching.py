@@ -90,7 +90,7 @@ def compare_metrics(
         out.parent.mkdir(parents=True, exist_ok=True)
         with out.open("w") as f:
             json.dump(results, f, indent=2)
-        print(f"\nSaved results → {out}")
+        print(f"\nSaved results: {out}")
 
     return results
 
@@ -120,7 +120,7 @@ def _plot_comparison(results: dict[str, Any], output_dir: Path | None) -> None:
         out = output_dir / "ios_vs_iou.png"
         out.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(out, dpi=150)
-        print(f"Saved plot → {out}")
+        print(f"Saved plot: {out}")
     else:
         plt.show()
     plt.close()
