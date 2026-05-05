@@ -106,6 +106,13 @@ class RoboflowOCR:
         label = match.group().lstrip("0") or "0" if match else "unknown"
         return label, 1.0
 
+    def predict_proba(self, bgr_image: np.ndarray, class_names: list[str]) -> np.ndarray:
+        label, _ = self.predict(bgr_image)
+        probs = np.zeros(len(class_names), dtype=np.float32)
+        if label in class_names:
+            probs[class_names.index(label)] = 1.0
+        return probs
+
     def predict_batch(self, bgr_images: list[np.ndarray]) -> list[tuple[str, float]]:
         return [self.predict(img) for img in bgr_images]
 
