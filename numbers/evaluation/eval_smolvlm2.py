@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 import cv2
@@ -25,6 +26,28 @@ def _load_jsonl(jsonl_path: Path) -> tuple[list[str], list[str]]:
     return images, labels
 
 
+def _load_imagefolder(split_dir: Path) -> tuple[list[str], list[str]]:
+    images, labels = [], []
+    for cls_dir in sorted(split_dir.iterdir()):
+        if not cls_dir.is_dir():
+            continue
+        for img in sorted(cls_dir.iterdir()):
+            if img.suffix.lower() in {".jpg", ".jpeg", ".png"}:
+                images.append(str(img))
+                labels.append(cls_dir.name)
+    return images, labels
+
+
+def _load_data(data_dir: Path, split: str) -> tuple[list[str], list[str]]:
+    jsonl_path = data_dir / f"{split}.jsonl"
+    if jsonl_path.exists():
+        return _load_jsonl(jsonl_path)
+    split_dir = data_dir / split
+    if split_dir.exists():
+        return _load_imagefolder(split_dir)
+    raise FileNotFoundError(f"No {split}.jsonl or {split}/ directory found in {data_dir}")
+
+
 def evaluate(
     data_dir: Path,
     split: str = "test",
@@ -34,10 +57,6 @@ def evaluate(
     roboflow_model: str | None = None,
     roboflow_api_key: str | None = None,
 ) -> dict:
-    jsonl_path = data_dir / f"{split}.jsonl"
-    if not jsonl_path.exists():
-        raise FileNotFoundError(f"JSONL file not found: {jsonl_path}")
-
     if roboflow_model:
         if not roboflow_api_key:
             raise ValueError("--roboflow-api-key is required when using --roboflow-model")
@@ -47,7 +66,7 @@ def evaluate(
     else:
         raise ValueError("Provide either --checkpoint or --roboflow-model")
 
-    image_paths, true_labels = _load_jsonl(jsonl_path)
+    image_paths, true_labels = _load_data(data_dir, split)
     class_names = sorted(set(true_labels))
     class_to_idx = {c: i for i, c in enumerate(class_names)}
     num_classes = len(class_names)
@@ -79,6 +98,14 @@ def evaluate(
 
     per_class_acc = np.where(counts > 0, per_class_correct / np.maximum(counts, 1), float("nan"))
 
+    macro_acc = float(np.nanmean(per_class_acc))
+    inv_freq = np.where(counts > 0, 1.0 / counts, 0.0)
+    inv_freq = inv_freq / inv_freq.sum()
+    weighted_acc = float(np.nansum(np.where(counts > 0, per_class_acc * inv_freq, 0.0)))
+
+    print(f"Macro  accuracy (mean per-class):       {macro_acc:.4f} ({macro_acc * 100:.2f}%)")
+    print(f"Weighted accuracy (inv-freq per-class): {weighted_acc:.4f} ({weighted_acc * 100:.2f}%)")
+
     print(f"\n{'Class':>6} {'Count':>6} {'Accuracy':>10}")
     print("-" * 26)
     for i in range(num_classes):
@@ -98,6 +125,8 @@ def evaluate(
 
     results = {
         "overall_accuracy": overall_acc,
+        "macro_accuracy": macro_acc,
+        "weighted_accuracy": weighted_acc,
         "hallucinated_count": hallucinated,
         "per_class": {
             class_names[i]: {
@@ -113,7 +142,7 @@ def evaluate(
         out.parent.mkdir(parents=True, exist_ok=True)
         with out.open("w") as f:
             json.dump(results, f, indent=2)
-        print(f"\nSaved results → {out}")
+        print(f"\nSaved results -> {out}")
 
     return results
 
@@ -131,7 +160,6 @@ def _plot_confusion_matrix(
         print("matplotlib/seaborn not installed — skipping confusion matrix plot.")
         return
 
-    # Exclude hallucinated predictions (-1) from the matrix
     mask = preds >= 0
     labels_clean = labels[mask]
     preds_clean = preds[mask]
@@ -144,7 +172,7 @@ def _plot_confusion_matrix(
     row_sums = cm.sum(axis=1, keepdims=True)
     cm_norm = np.where(row_sums > 0, cm / row_sums, 0.0)
 
-    fig, ax = plt.subplots(figsize=(max(10, n // 3), max(8, n // 3)))
+    _, ax = plt.subplots(figsize=(max(10, n // 3), max(8, n // 3)))
     sns.heatmap(
         cm_norm,
         xticklabels=class_names,
@@ -164,7 +192,7 @@ def _plot_confusion_matrix(
         out = output_dir / "confusion_matrix.png"
         out.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(out, dpi=150)
-        print(f"Saved confusion matrix → {out}")
+        print(f"Saved confusion matrix -> {out}")
     else:
         plt.show()
     plt.close()
@@ -175,15 +203,14 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--checkpoint", help="Path to fine-tuned LoRA checkpoint directory.")
     parser.add_argument("--roboflow-model", help="Roboflow model ID (e.g. basketball-jersey-numbers-ocr/3).")
     parser.add_argument("--roboflow-api-key", help="Roboflow API key (or set ROBOFLOW_API_KEY env var).")
-    parser.add_argument("--data", required=True, help="Dataset root with train/val/test subdirs.")
-    parser.add_argument("--split", default="test", choices=["train", "val", "test"])
+    parser.add_argument("--data", required=True, help="Dataset root (JSONL dir or ImageFolder root).")
+    parser.add_argument("--split", default="test", choices=["train", "val", "test", "eval"])
     parser.add_argument("--output-dir", help="Directory for confusion matrix PNG and JSON results.")
     parser.add_argument("--device", default="auto")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    import os
     args = _build_parser().parse_args(argv)
     api_key = args.roboflow_api_key or os.getenv("ROBOFLOW_API_KEY")
     evaluate(
