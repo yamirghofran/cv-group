@@ -19,6 +19,10 @@ object-detection/data/
 object-detection/checkpoints/
 third_party/sam2/
 
+# Clustering generated/local files
+clustering/outputs/
+clustering/data/
+
 # YOLO finetuning artifacts
 object-detection/finetuning/runs/
 object-detection/finetuning/checkpoints/

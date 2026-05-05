@@ -26,6 +26,11 @@ dependencies = [
 dev = [
     "pytest>=8.0",
 ]
+clustering = [
+    "scikit-learn>=1.4",
+    "transformers>=4.45",
+    "umap-learn>=0.5",
+]
 train = [
     "roboflow>=1.1",
 ]
@@ -42,6 +47,8 @@ basketball-track = "src.tracking:main"
 basketball-visualize-detections = "src.visualize_detections:main"
 basketball-visualize-tracks = "src.visualize_tracks:main"
 basketball-export-crops = "src.export_crops:main"
+basketball-team-cluster = "clustering.cli:cluster_main"
+basketball-team-bench = "clustering.cli:bench_main"
 basketball-api = "api.app:run"
 
 [build-system]
@@ -49,10 +56,10 @@ requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["object-detection", "."]
-include = ["src*", "api*"]
+where = ["object-detection", ".", "."]
+include = ["src*", "clustering*", "api*"]
 exclude = ["object-detection*", "third_party*", "tests*", "docs*", "data*", "outputs*", "checkpoints*"]
 
 [tool.pytest.ini_options]
-testpaths = ["object-detection/tests"]
-pythonpath = ["object-detection"]
+testpaths = ["object-detection/tests", "clustering/tests"]
+pythonpath = ["object-detection", "."]
