@@ -37,6 +37,7 @@ basketball-train-resnet = "jersey_numbers.ocr.resnet:main"
 basketball-train-resnet18 = "jersey_numbers.ocr.resnet18:main"
 basketball-match-numbers = "jersey_numbers.matching.ios:main"
 basketball-eval-resnet = "evaluation.eval_resnet:main"
+basketball-eval-resnet18 = "evaluation.eval_resnet18:main"
 basketball-eval-matching = "evaluation.eval_matching:main"
 
 [build-system]
