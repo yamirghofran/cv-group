@@ -1,0 +1,4407 @@
+{
+  "video": "object-detection\\data\\raw\\clip_001.mp4",
+  "fps": 30.0,
+  "width": 1920,
+  "height": 1080,
+  "model_id": "basketball-court-detection-2",
+  "model_version": 19,
+  "frame_stride": 15,
+  "keypoint_confidence": 0.5,
+  "min_keypoints": 4,
+  "frames": [
+    {
+      "frame_id": 0,
+      "timestamp_sec": 0.0,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 0.0001805424690246582,
+          "image_xy": [
+            590.0,
+            275.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 0.00014007091522216797,
+          "image_xy": [
+            561.0,
+            304.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 0.00010693073272705078,
+          "image_xy": [
+            435.0,
+            441.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 9.500980377197266e-05,
+          "image_xy": [
+            287.0,
+            639.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 0.00032269954681396484,
+          "image_xy": [
+            118.0,
+            836.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.0002697110176086426,
+          "image_xy": [
+            64.0,
+            890.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 0.00024002790451049805,
+          "image_xy": [
+            494.0,
+            539.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0008124709129333496,
+          "image_xy": [
+            995.0,
+            343.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.0028784871101379395,
+          "image_xy": [
+            613.0,
+            891.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0021459460258483887,
+          "image_xy": [
+            1041.0,
+            500.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.0031800270080566406,
+          "image_xy": [
+            980.0,
+            590.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.0043656229972839355,
+          "image_xy": [
+            916.0,
+            698.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.0016835927963256836,
+          "image_xy": [
+            1458.0,
+            346.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.00978398323059082,
+          "image_xy": [
+            1359.0,
+            620.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.012466907501220703,
+          "image_xy": [
+            1101.0,
+            1023.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.0003609657287597656,
+          "image_xy": [
+            1906.0,
+            385.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0013699531555175781,
+          "image_xy": [
+            1896.0,
+            706.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.0021266937255859375,
+          "image_xy": [
+            1147.0,
+            993.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.4627072215080261,
+          "image_xy": [
+            249.0,
+            352.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.9050859212875366,
+          "image_xy": [
+            351.0,
+            624.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.06806290149688721,
+          "image_xy": [
+            580.0,
+            1019.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9673289656639099,
+          "image_xy": [
+            655.0,
+            501.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.9879665970802307,
+          "image_xy": [
+            715.0,
+            588.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9887155890464783,
+          "image_xy": [
+            790.0,
+            698.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.897657573223114,
+          "image_xy": [
+            698.0,
+            347.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.8005837202072144,
+          "image_xy": [
+            1153.0,
+            893.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9898171424865723,
+          "image_xy": [
+            1230.0,
+            540.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.8774228096008301,
+          "image_xy": [
+            1097.0,
+            291.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.904983401298523,
+          "image_xy": [
+            1127.0,
+            315.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9712259769439697,
+          "image_xy": [
+            1281.0,
+            444.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.9861205220222473,
+          "image_xy": [
+            1488.0,
+            630.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.48807889223098755,
+          "image_xy": [
+            1735.0,
+            835.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.05790477991104126,
+          "image_xy": [
+            1815.0,
+            882.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 15,
+      "timestamp_sec": 0.5,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 0.00017374753952026367,
+          "image_xy": [
+            584.0,
+            275.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 0.00013458728790283203,
+          "image_xy": [
+            555.0,
+            304.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 0.00010192394256591797,
+          "image_xy": [
+            429.0,
+            442.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 8.857250213623047e-05,
+          "image_xy": [
+            280.0,
+            640.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 0.0003027915954589844,
+          "image_xy": [
+            110.0,
+            838.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.0002537369728088379,
+          "image_xy": [
+            57.0,
+            891.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 0.00022751092910766602,
+          "image_xy": [
+            487.0,
+            540.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0008116364479064941,
+          "image_xy": [
+            988.0,
+            344.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.002799391746520996,
+          "image_xy": [
+            605.0,
+            893.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0021589994430541992,
+          "image_xy": [
+            1033.0,
+            501.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.0031625032424926758,
+          "image_xy": [
+            973.0,
+            591.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.004298508167266846,
+          "image_xy": [
+            908.0,
+            700.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.0017540454864501953,
+          "image_xy": [
+            1450.0,
+            347.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.010081052780151367,
+          "image_xy": [
+            1351.0,
+            621.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.012159168720245361,
+          "image_xy": [
+            1093.0,
+            1025.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.00037276744842529297,
+          "image_xy": [
+            1910.0,
+            385.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.001414179801940918,
+          "image_xy": [
+            1902.0,
+            707.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.0021100640296936035,
+          "image_xy": [
+            1152.0,
+            994.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.4485037326812744,
+          "image_xy": [
+            241.0,
+            353.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.8969964981079102,
+          "image_xy": [
+            343.0,
+            626.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.065582275390625,
+          "image_xy": [
+            571.0,
+            1021.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9656191468238831,
+          "image_xy": [
+            647.0,
+            502.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.987267792224884,
+          "image_xy": [
+            707.0,
+            589.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9881312847137451,
+          "image_xy": [
+            783.0,
+            700.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.895349383354187,
+          "image_xy": [
+            690.0,
+            347.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.7992355823516846,
+          "image_xy": [
+            1146.0,
+            894.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9897081851959229,
+          "image_xy": [
+            1221.0,
+            540.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.8776755332946777,
+          "image_xy": [
+            1087.0,
+            291.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9052680730819702,
+          "image_xy": [
+            1117.0,
+            315.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9714116454124451,
+          "image_xy": [
+            1271.0,
+            445.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.986375093460083,
+          "image_xy": [
+            1479.0,
+            630.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.49929797649383545,
+          "image_xy": [
+            1728.0,
+            836.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.06006264686584473,
+          "image_xy": [
+            1808.0,
+            883.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 30,
+      "timestamp_sec": 1.0,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 0.00015246868133544922,
+          "image_xy": [
+            565.0,
+            276.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 0.00011622905731201172,
+          "image_xy": [
+            536.0,
+            305.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 7.975101470947266e-05,
+          "image_xy": [
+            410.0,
+            443.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 6.341934204101562e-05,
+          "image_xy": [
+            262.0,
+            642.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 0.00023752450942993164,
+          "image_xy": [
+            96.0,
+            840.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.0002135634422302246,
+          "image_xy": [
+            42.0,
+            893.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 0.00017887353897094727,
+          "image_xy": [
+            470.0,
+            542.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0007665157318115234,
+          "image_xy": [
+            971.0,
+            345.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.0024277567863464355,
+          "image_xy": [
+            590.0,
+            895.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0020032525062561035,
+          "image_xy": [
+            1016.0,
+            502.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.0028814077377319336,
+          "image_xy": [
+            956.0,
+            592.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.0038174986839294434,
+          "image_xy": [
+            891.0,
+            701.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.001687765121459961,
+          "image_xy": [
+            1433.0,
+            348.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.009397506713867188,
+          "image_xy": [
+            1336.0,
+            622.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.011989295482635498,
+          "image_xy": [
+            1078.0,
+            1027.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.00041109323501586914,
+          "image_xy": [
+            1912.0,
+            384.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0015381574630737305,
+          "image_xy": [
+            1910.0,
+            707.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.0021448731422424316,
+          "image_xy": [
+            1164.0,
+            997.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.4257788062095642,
+          "image_xy": [
+            223.0,
+            354.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.8857352137565613,
+          "image_xy": [
+            323.0,
+            626.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.06671440601348877,
+          "image_xy": [
+            550.0,
+            1023.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9652497172355652,
+          "image_xy": [
+            629.0,
+            503.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.9872488379478455,
+          "image_xy": [
+            689.0,
+            591.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9884395599365234,
+          "image_xy": [
+            764.0,
+            701.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.8973332047462463,
+          "image_xy": [
+            673.0,
+            349.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.8075790405273438,
+          "image_xy": [
+            1126.0,
+            896.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9905880689620972,
+          "image_xy": [
+            1205.0,
+            542.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.8843878507614136,
+          "image_xy": [
+            1073.0,
+            292.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9115760326385498,
+          "image_xy": [
+            1103.0,
+            317.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9735881686210632,
+          "image_xy": [
+            1256.0,
+            447.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.9875518679618835,
+          "image_xy": [
+            1462.0,
+            632.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.5107976794242859,
+          "image_xy": [
+            1709.0,
+            838.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.06193339824676514,
+          "image_xy": [
+            1790.0,
+            885.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 45,
+      "timestamp_sec": 1.5,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 0.00013494491577148438,
+          "image_xy": [
+            561.0,
+            278.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 0.00010263919830322266,
+          "image_xy": [
+            531.0,
+            308.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 6.723403930664062e-05,
+          "image_xy": [
+            405.0,
+            448.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 5.078315734863281e-05,
+          "image_xy": [
+            256.0,
+            649.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 0.00019973516464233398,
+          "image_xy": [
+            89.0,
+            850.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.00019174814224243164,
+          "image_xy": [
+            34.0,
+            904.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 0.000148773193359375,
+          "image_xy": [
+            464.0,
+            547.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0007428526878356934,
+          "image_xy": [
+            969.0,
+            348.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.0019505023956298828,
+          "image_xy": [
+            585.0,
+            906.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0019107460975646973,
+          "image_xy": [
+            1014.0,
+            508.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.0026336312294006348,
+          "image_xy": [
+            953.0,
+            599.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.0032779574394226074,
+          "image_xy": [
+            888.0,
+            709.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.0016568899154663086,
+          "image_xy": [
+            1438.0,
+            351.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.008843064308166504,
+          "image_xy": [
+            1339.0,
+            630.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.010999321937561035,
+          "image_xy": [
+            1080.0,
+            1041.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.0003718137741088867,
+          "image_xy": [
+            1917.0,
+            388.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0013813972473144531,
+          "image_xy": [
+            1915.0,
+            715.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.002041339874267578,
+          "image_xy": [
+            1166.0,
+            1008.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.41275888681411743,
+          "image_xy": [
+            218.0,
+            357.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.8767029643058777,
+          "image_xy": [
+            317.0,
+            633.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.062076449394226074,
+          "image_xy": [
+            545.0,
+            1036.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9643857479095459,
+          "image_xy": [
+            624.0,
+            509.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.9867879152297974,
+          "image_xy": [
+            684.0,
+            597.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9877974390983582,
+          "image_xy": [
+            759.0,
+            709.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.8967886567115784,
+          "image_xy": [
+            669.0,
+            352.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.798313558101654,
+          "image_xy": [
+            1123.0,
+            907.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9910416007041931,
+          "image_xy": [
+            1205.0,
+            548.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.8887946009635925,
+          "image_xy": [
+            1072.0,
+            295.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9156805276870728,
+          "image_xy": [
+            1102.0,
+            320.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9753243923187256,
+          "image_xy": [
+            1257.0,
+            452.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.987955629825592,
+          "image_xy": [
+            1466.0,
+            640.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.5020546913146973,
+          "image_xy": [
+            1714.0,
+            849.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.05934584140777588,
+          "image_xy": [
+            1796.0,
+            896.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 60,
+      "timestamp_sec": 2.0,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 0.00015294551849365234,
+          "image_xy": [
+            558.0,
+            296.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 0.0001163482666015625,
+          "image_xy": [
+            528.0,
+            326.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 6.961822509765625e-05,
+          "image_xy": [
+            401.0,
+            467.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 4.4226646423339844e-05,
+          "image_xy": [
+            250.0,
+            667.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 0.00016701221466064453,
+          "image_xy": [
+            82.0,
+            868.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.00017058849334716797,
+          "image_xy": [
+            29.0,
+            923.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 0.00014519691467285156,
+          "image_xy": [
+            461.0,
+            565.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0009074211120605469,
+          "image_xy": [
+            968.0,
+            366.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.0015205740928649902,
+          "image_xy": [
+            581.0,
+            926.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0021581649780273438,
+          "image_xy": [
+            1013.0,
+            527.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.002685725688934326,
+          "image_xy": [
+            952.0,
+            617.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.0028745532035827637,
+          "image_xy": [
+            886.0,
+            728.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.001953721046447754,
+          "image_xy": [
+            1440.0,
+            370.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.00860142707824707,
+          "image_xy": [
+            1339.0,
+            649.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.00907808542251587,
+          "image_xy": [
+            1083.0,
+            1064.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.0003813505172729492,
+          "image_xy": [
+            1924.0,
+            405.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0013046860694885254,
+          "image_xy": [
+            1924.0,
+            734.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.0018945932388305664,
+          "image_xy": [
+            1165.0,
+            1023.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.42082369327545166,
+          "image_xy": [
+            212.0,
+            375.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.8633314371109009,
+          "image_xy": [
+            310.0,
+            652.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.050689697265625,
+          "image_xy": [
+            539.0,
+            1056.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9659723043441772,
+          "image_xy": [
+            618.0,
+            527.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.986352801322937,
+          "image_xy": [
+            680.0,
+            616.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9862385988235474,
+          "image_xy": [
+            755.0,
+            727.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.9085091352462769,
+          "image_xy": [
+            664.0,
+            370.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.7711334824562073,
+          "image_xy": [
+            1121.0,
+            925.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9916369318962097,
+          "image_xy": [
+            1201.0,
+            566.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.9069884419441223,
+          "image_xy": [
+            1068.0,
+            312.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9298123717308044,
+          "image_xy": [
+            1098.0,
+            337.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9787620306015015,
+          "image_xy": [
+            1254.0,
+            469.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.9877575635910034,
+          "image_xy": [
+            1465.0,
+            658.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.4818308353424072,
+          "image_xy": [
+            1716.0,
+            867.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.05436670780181885,
+          "image_xy": [
+            1798.0,
+            915.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 75,
+      "timestamp_sec": 2.5,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 0.0001341104507446289,
+          "image_xy": [
+            543.0,
+            278.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 0.00010120868682861328,
+          "image_xy": [
+            513.0,
+            307.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 6.222724914550781e-05,
+          "image_xy": [
+            384.0,
+            447.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 4.291534423828125e-05,
+          "image_xy": [
+            233.0,
+            648.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 0.0001704692840576172,
+          "image_xy": [
+            65.0,
+            849.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.0001659393310546875,
+          "image_xy": [
+            10.0,
+            903.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 0.0001392364501953125,
+          "image_xy": [
+            444.0,
+            546.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0007840394973754883,
+          "image_xy": [
+            955.0,
+            348.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.001969635486602783,
+          "image_xy": [
+            564.0,
+            906.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0020480751991271973,
+          "image_xy": [
+            999.0,
+            507.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.0028176307678222656,
+          "image_xy": [
+            938.0,
+            598.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.00348585844039917,
+          "image_xy": [
+            872.0,
+            709.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.0017582178115844727,
+          "image_xy": [
+            1425.0,
+            351.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.009399771690368652,
+          "image_xy": [
+            1325.0,
+            629.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.010924220085144043,
+          "image_xy": [
+            1066.0,
+            1043.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.0004011988639831543,
+          "image_xy": [
+            1929.0,
+            387.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0014986991882324219,
+          "image_xy": [
+            1929.0,
+            714.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.00203704833984375,
+          "image_xy": [
+            1178.0,
+            1008.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.38225656747817993,
+          "image_xy": [
+            193.0,
+            357.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.8597208261489868,
+          "image_xy": [
+            293.0,
+            633.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.06015574932098389,
+          "image_xy": [
+            523.0,
+            1038.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9631339907646179,
+          "image_xy": [
+            604.0,
+            508.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.986504852771759,
+          "image_xy": [
+            666.0,
+            597.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9878722429275513,
+          "image_xy": [
+            742.0,
+            709.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.8971980810165405,
+          "image_xy": [
+            649.0,
+            352.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.8044939637184143,
+          "image_xy": [
+            1110.0,
+            907.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9913081526756287,
+          "image_xy": [
+            1190.0,
+            547.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.8927690386772156,
+          "image_xy": [
+            1055.0,
+            294.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9188761711120605,
+          "image_xy": [
+            1086.0,
+            319.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9761059880256653,
+          "image_xy": [
+            1242.0,
+            451.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.9884186387062073,
+          "image_xy": [
+            1453.0,
+            639.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.5122302174568176,
+          "image_xy": [
+            1704.0,
+            848.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.06192702054977417,
+          "image_xy": [
+            1787.0,
+            895.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 90,
+      "timestamp_sec": 3.0,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 0.0001201629638671875,
+          "image_xy": [
+            507.0,
+            278.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 8.845329284667969e-05,
+          "image_xy": [
+            476.0,
+            309.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 4.649162292480469e-05,
+          "image_xy": [
+            347.0,
+            449.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 2.7418136596679688e-05,
+          "image_xy": [
+            194.0,
+            650.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 0.00011777877807617188,
+          "image_xy": [
+            31.0,
+            851.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.00012171268463134766,
+          "image_xy": [
+            -22.0,
+            903.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 0.00010395050048828125,
+          "image_xy": [
+            407.0,
+            548.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0008275508880615234,
+          "image_xy": [
+            919.0,
+            349.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.0017173290252685547,
+          "image_xy": [
+            525.0,
+            907.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.002129673957824707,
+          "image_xy": [
+            962.0,
+            508.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.002822399139404297,
+          "image_xy": [
+            902.0,
+            598.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.003344416618347168,
+          "image_xy": [
+            834.0,
+            709.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.0019470453262329102,
+          "image_xy": [
+            1388.0,
+            353.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.009764134883880615,
+          "image_xy": [
+            1289.0,
+            628.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.010300695896148682,
+          "image_xy": [
+            1032.0,
+            1044.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.0005231499671936035,
+          "image_xy": [
+            1927.0,
+            385.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0018966197967529297,
+          "image_xy": [
+            1937.0,
+            712.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.0020499825477600098,
+          "image_xy": [
+            1203.0,
+            1010.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.3114301562309265,
+          "image_xy": [
+            152.0,
+            358.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.7949554920196533,
+          "image_xy": [
+            251.0,
+            636.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.055130958557128906,
+          "image_xy": [
+            479.0,
+            1041.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.955159068107605,
+          "image_xy": [
+            563.0,
+            510.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.9836902022361755,
+          "image_xy": [
+            626.0,
+            599.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9862934350967407,
+          "image_xy": [
+            703.0,
+            711.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.890346109867096,
+          "image_xy": [
+            608.0,
+            353.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.8133156299591064,
+          "image_xy": [
+            1074.0,
+            907.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9916796088218689,
+          "image_xy": [
+            1151.0,
+            547.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.9002916812896729,
+          "image_xy": [
+            1015.0,
+            295.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9253658652305603,
+          "image_xy": [
+            1046.0,
+            320.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9777923822402954,
+          "image_xy": [
+            1203.0,
+            451.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.9893520474433899,
+          "image_xy": [
+            1414.0,
+            639.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.542950451374054,
+          "image_xy": [
+            1666.0,
+            847.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.06787359714508057,
+          "image_xy": [
+            1751.0,
+            895.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 105,
+      "timestamp_sec": 3.5,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 8.606910705566406e-05,
+          "image_xy": [
+            459.0,
+            280.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 6.270408630371094e-05,
+          "image_xy": [
+            428.0,
+            313.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 2.8014183044433594e-05,
+          "image_xy": [
+            294.0,
+            460.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 1.2993812561035156e-05,
+          "image_xy": [
+            134.0,
+            665.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 5.996227264404297e-05,
+          "image_xy": [
+            -27.0,
+            875.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 6.949901580810547e-05,
+          "image_xy": [
+            -80.0,
+            926.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 6.139278411865234e-05,
+          "image_xy": [
+            354.0,
+            561.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0007755756378173828,
+          "image_xy": [
+            877.0,
+            354.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.0010453462600708008,
+          "image_xy": [
+            476.0,
+            933.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0019832849502563477,
+          "image_xy": [
+            922.0,
+            520.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.0024148225784301758,
+          "image_xy": [
+            860.0,
+            611.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.002461552619934082,
+          "image_xy": [
+            790.0,
+            727.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.0019479990005493164,
+          "image_xy": [
+            1355.0,
+            358.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.009042978286743164,
+          "image_xy": [
+            1256.0,
+            642.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.007963299751281738,
+          "image_xy": [
+            997.0,
+            1076.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.0005211234092712402,
+          "image_xy": [
+            1936.0,
+            387.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0018916130065917969,
+          "image_xy": [
+            1956.0,
+            726.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.0017572641372680664,
+          "image_xy": [
+            1237.0,
+            1036.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.21477103233337402,
+          "image_xy": [
+            89.0,
+            364.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.6706392168998718,
+          "image_xy": [
+            190.0,
+            653.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.041382789611816406,
+          "image_xy": [
+            419.0,
+            1072.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9399639964103699,
+          "image_xy": [
+            510.0,
+            523.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.977451741695404,
+          "image_xy": [
+            574.0,
+            614.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9815422892570496,
+          "image_xy": [
+            654.0,
+            730.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.8718191385269165,
+          "image_xy": [
+            556.0,
+            359.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.7872356176376343,
+          "image_xy": [
+            1035.0,
+            931.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9915651082992554,
+          "image_xy": [
+            1112.0,
+            558.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.899612545967102,
+          "image_xy": [
+            972.0,
+            296.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9260631799697876,
+          "image_xy": [
+            1004.0,
+            323.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9787443280220032,
+          "image_xy": [
+            1163.0,
+            459.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.989371657371521,
+          "image_xy": [
+            1378.0,
+            652.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.5504825115203857,
+          "image_xy": [
+            1636.0,
+            868.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.06649672985076904,
+          "image_xy": [
+            1727.0,
+            918.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 120,
+      "timestamp_sec": 4.0,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 8.654594421386719e-05,
+          "image_xy": [
+            417.0,
+            276.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 6.508827209472656e-05,
+          "image_xy": [
+            384.0,
+            308.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 3.3736228942871094e-05,
+          "image_xy": [
+            244.0,
+            462.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 1.6689300537109375e-05,
+          "image_xy": [
+            82.0,
+            677.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 7.092952728271484e-05,
+          "image_xy": [
+            -92.0,
+            894.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 9.000301361083984e-05,
+          "image_xy": [
+            -150.0,
+            950.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 7.486343383789062e-05,
+          "image_xy": [
+            310.0,
+            568.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0006080865859985352,
+          "image_xy": [
+            856.0,
+            351.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.000887453556060791,
+          "image_xy": [
+            444.0,
+            956.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0015413761138916016,
+          "image_xy": [
+            905.0,
+            525.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.0019322037696838379,
+          "image_xy": [
+            839.0,
+            621.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.001975536346435547,
+          "image_xy": [
+            768.0,
+            742.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.001250624656677246,
+          "image_xy": [
+            1359.0,
+            356.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.006345868110656738,
+          "image_xy": [
+            1254.0,
+            654.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.0077394843101501465,
+          "image_xy": [
+            984.0,
+            1104.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.00021344423294067383,
+          "image_xy": [
+            1887.0,
+            390.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0008167624473571777,
+          "image_xy": [
+            1891.0,
+            745.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.0015291571617126465,
+          "image_xy": [
+            1090.0,
+            1054.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.37829822301864624,
+          "image_xy": [
+            39.0,
+            361.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.8620692491531372,
+          "image_xy": [
+            145.0,
+            660.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.04959285259246826,
+          "image_xy": [
+            389.0,
+            1095.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.974247395992279,
+          "image_xy": [
+            479.0,
+            527.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.9902220964431763,
+          "image_xy": [
+            545.0,
+            622.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9902578592300415,
+          "image_xy": [
+            626.0,
+            742.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.9253937005996704,
+          "image_xy": [
+            531.0,
+            356.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.7748711109161377,
+          "image_xy": [
+            1016.0,
+            954.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9937571287155151,
+          "image_xy": [
+            1107.0,
+            567.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.9188752770423889,
+          "image_xy": [
+            968.0,
+            294.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.939570963382721,
+          "image_xy": [
+            999.0,
+            321.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9829015731811523,
+          "image_xy": [
+            1164.0,
+            464.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.9896731376647949,
+          "image_xy": [
+            1385.0,
+            666.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.4752933979034424,
+          "image_xy": [
+            1650.0,
+            892.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.050513267517089844,
+          "image_xy": [
+            1740.0,
+            943.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 135,
+      "timestamp_sec": 4.5,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 0.0001112222671508789,
+          "image_xy": [
+            359.0,
+            275.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 8.678436279296875e-05,
+          "image_xy": [
+            325.0,
+            307.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 5.161762237548828e-05,
+          "image_xy": [
+            179.0,
+            464.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 2.6702880859375e-05,
+          "image_xy": [
+            12.0,
+            683.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 9.357929229736328e-05,
+          "image_xy": [
+            -178.0,
+            906.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.00010693073272705078,
+          "image_xy": [
+            -237.0,
+            963.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 0.00011026859283447266,
+          "image_xy": [
+            245.0,
+            574.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0006945133209228516,
+          "image_xy": [
+            804.0,
+            351.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.0008714795112609863,
+          "image_xy": [
+            378.0,
+            970.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0017824769020080566,
+          "image_xy": [
+            855.0,
+            530.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.0021479129791259766,
+          "image_xy": [
+            786.0,
+            629.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.002043604850769043,
+          "image_xy": [
+            712.0,
+            752.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.0012755990028381348,
+          "image_xy": [
+            1321.0,
+            358.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.00637209415435791,
+          "image_xy": [
+            1209.0,
+            665.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.006659567356109619,
+          "image_xy": [
+            933.0,
+            1122.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.00016200542449951172,
+          "image_xy": [
+            1802.0,
+            395.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0006020069122314453,
+          "image_xy": [
+            1795.0,
+            758.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.001281142234802246,
+          "image_xy": [
+            967.0,
+            1063.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.4730825424194336,
+          "image_xy": [
+            -34.0,
+            361.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.9041937589645386,
+          "image_xy": [
+            78.0,
+            669.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.04351365566253662,
+          "image_xy": [
+            331.0,
+            1110.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9815355539321899,
+          "image_xy": [
+            417.0,
+            531.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.9924753308296204,
+          "image_xy": [
+            485.0,
+            628.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9910408854484558,
+          "image_xy": [
+            570.0,
+            750.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.9405983686447144,
+          "image_xy": [
+            470.0,
+            356.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.7356836795806885,
+          "image_xy": [
+            972.0,
+            969.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9940599203109741,
+          "image_xy": [
+            1060.0,
+            572.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.9282726645469666,
+          "image_xy": [
+            916.0,
+            292.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9452146291732788,
+          "image_xy": [
+            946.0,
+            320.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.984331488609314,
+          "image_xy": [
+            1117.0,
+            466.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.9884244203567505,
+          "image_xy": [
+            1347.0,
+            673.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.41617196798324585,
+          "image_xy": [
+            1624.0,
+            905.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.03962552547454834,
+          "image_xy": [
+            1713.0,
+            957.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 150,
+      "timestamp_sec": 5.0,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 6.29425048828125e-05,
+          "image_xy": [
+            350.0,
+            281.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 4.8995018005371094e-05,
+          "image_xy": [
+            316.0,
+            313.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 3.4689903259277344e-05,
+          "image_xy": [
+            175.0,
+            470.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 2.8371810913085938e-05,
+          "image_xy": [
+            15.0,
+            694.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 0.00011932849884033203,
+          "image_xy": [
+            -166.0,
+            916.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.0001310110092163086,
+          "image_xy": [
+            -227.0,
+            972.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 8.916854858398438e-05,
+          "image_xy": [
+            241.0,
+            582.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0003647804260253906,
+          "image_xy": [
+            796.0,
+            358.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.0014790892601013184,
+          "image_xy": [
+            377.0,
+            976.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.00113677978515625,
+          "image_xy": [
+            848.0,
+            536.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.0018222332000732422,
+          "image_xy": [
+            780.0,
+            636.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.0026302337646484375,
+          "image_xy": [
+            710.0,
+            759.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.0007661581039428711,
+          "image_xy": [
+            1312.0,
+            362.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.006561100482940674,
+          "image_xy": [
+            1203.0,
+            671.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.011451959609985352,
+          "image_xy": [
+            915.0,
+            1120.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.00012767314910888672,
+          "image_xy": [
+            1786.0,
+            403.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0006097555160522461,
+          "image_xy": [
+            1773.0,
+            765.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.0016266107559204102,
+          "image_xy": [
+            976.0,
+            1087.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.41666412353515625,
+          "image_xy": [
+            -28.0,
+            367.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.9199240207672119,
+          "image_xy": [
+            84.0,
+            677.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.07588917016983032,
+          "image_xy": [
+            334.0,
+            1117.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9768685698509216,
+          "image_xy": [
+            422.0,
+            538.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.9926080703735352,
+          "image_xy": [
+            486.0,
+            635.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9934614896774292,
+          "image_xy": [
+            569.0,
+            760.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.9110318422317505,
+          "image_xy": [
+            472.0,
+            361.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.8223019242286682,
+          "image_xy": [
+            968.0,
+            978.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9933358430862427,
+          "image_xy": [
+            1061.0,
+            580.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.8811805248260498,
+          "image_xy": [
+            920.0,
+            298.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9100819826126099,
+          "image_xy": [
+            952.0,
+            327.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9773430824279785,
+          "image_xy": [
+            1119.0,
+            473.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.9902286529541016,
+          "image_xy": [
+            1344.0,
+            682.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.496488094329834,
+          "image_xy": [
+            1611.0,
+            914.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.054815471172332764,
+          "image_xy": [
+            1703.0,
+            966.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 165,
+      "timestamp_sec": 5.5,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 9.322166442871094e-05,
+          "image_xy": [
+            374.0,
+            299.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 7.331371307373047e-05,
+          "image_xy": [
+            342.0,
+            331.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 5.447864532470703e-05,
+          "image_xy": [
+            205.0,
+            482.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 4.458427429199219e-05,
+          "image_xy": [
+            49.0,
+            697.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 0.00017058849334716797,
+          "image_xy": [
+            -127.0,
+            912.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.00016880035400390625,
+          "image_xy": [
+            -186.0,
+            965.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 0.00012922286987304688,
+          "image_xy": [
+            270.0,
+            591.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.00047850608825683594,
+          "image_xy": [
+            801.0,
+            374.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.0017622709274291992,
+          "image_xy": [
+            402.0,
+            969.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0013692975044250488,
+          "image_xy": [
+            852.0,
+            546.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.002084195613861084,
+          "image_xy": [
+            787.0,
+            643.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.002873241901397705,
+          "image_xy": [
+            720.0,
+            761.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.001026153564453125,
+          "image_xy": [
+            1295.0,
+            377.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.007289409637451172,
+          "image_xy": [
+            1191.0,
+            675.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.011331737041473389,
+          "image_xy": [
+            916.0,
+            1109.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.00020200014114379883,
+          "image_xy": [
+            1759.0,
+            416.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0008513927459716797,
+          "image_xy": [
+            1752.0,
+            767.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.0017611980438232422,
+          "image_xy": [
+            964.0,
+            1075.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.48481857776641846,
+          "image_xy": [
+            7.0,
+            383.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.9272754788398743,
+          "image_xy": [
+            117.0,
+            682.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.07364946603775024,
+          "image_xy": [
+            357.0,
+            1105.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9779586791992188,
+          "image_xy": [
+            443.0,
+            547.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.992260754108429,
+          "image_xy": [
+            505.0,
+            642.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9925664663314819,
+          "image_xy": [
+            586.0,
+            762.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.9197486639022827,
+          "image_xy": [
+            492.0,
+            377.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.809645414352417,
+          "image_xy": [
+            969.0,
+            971.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9926597476005554,
+          "image_xy": [
+            1055.0,
+            587.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.8903176188468933,
+          "image_xy": [
+            919.0,
+            315.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9157512187957764,
+          "image_xy": [
+            949.0,
+            343.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9771910905838013,
+          "image_xy": [
+            1109.0,
+            485.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.9891694784164429,
+          "image_xy": [
+            1326.0,
+            685.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.5015639066696167,
+          "image_xy": [
+            1587.0,
+            909.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.0560683012008667,
+          "image_xy": [
+            1675.0,
+            960.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    },
+    {
+      "frame_id": 180,
+      "timestamp_sec": 6.0,
+      "keypoints": [
+        {
+          "class_name": "01",
+          "class_id": 0,
+          "confidence": 9.34600830078125e-05,
+          "image_xy": [
+            376.0,
+            294.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "02",
+          "class_id": 1,
+          "confidence": 7.367134094238281e-05,
+          "image_xy": [
+            344.0,
+            325.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "04",
+          "class_id": 2,
+          "confidence": 5.638599395751953e-05,
+          "image_xy": [
+            208.0,
+            476.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "05",
+          "class_id": 3,
+          "confidence": 4.887580871582031e-05,
+          "image_xy": [
+            51.0,
+            691.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "07",
+          "class_id": 4,
+          "confidence": 0.0001849532127380371,
+          "image_xy": [
+            -124.0,
+            905.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "08",
+          "class_id": 5,
+          "confidence": 0.00017887353897094727,
+          "image_xy": [
+            -184.0,
+            958.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "09",
+          "class_id": 6,
+          "confidence": 0.00013720989227294922,
+          "image_xy": [
+            273.0,
+            584.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "10",
+          "class_id": 7,
+          "confidence": 0.0004602670669555664,
+          "image_xy": [
+            805.0,
+            368.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "11",
+          "class_id": 8,
+          "confidence": 0.001984238624572754,
+          "image_xy": [
+            406.0,
+            962.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "12",
+          "class_id": 9,
+          "confidence": 0.0013463497161865234,
+          "image_xy": [
+            856.0,
+            539.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "13",
+          "class_id": 10,
+          "confidence": 0.0021405816078186035,
+          "image_xy": [
+            791.0,
+            636.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "14",
+          "class_id": 11,
+          "confidence": 0.0031255483627319336,
+          "image_xy": [
+            724.0,
+            755.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "15",
+          "class_id": 12,
+          "confidence": 0.0009714365005493164,
+          "image_xy": [
+            1300.0,
+            371.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "16",
+          "class_id": 13,
+          "confidence": 0.007381021976470947,
+          "image_xy": [
+            1196.0,
+            668.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "17",
+          "class_id": 14,
+          "confidence": 0.01219254732131958,
+          "image_xy": [
+            919.0,
+            1101.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "19",
+          "class_id": 15,
+          "confidence": 0.00019377470016479492,
+          "image_xy": [
+            1759.0,
+            411.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "21",
+          "class_id": 16,
+          "confidence": 0.0008376836776733398,
+          "image_xy": [
+            1749.0,
+            761.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "23",
+          "class_id": 17,
+          "confidence": 0.001800537109375,
+          "image_xy": [
+            962.0,
+            1070.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "25",
+          "class_id": 18,
+          "confidence": 0.4896090626716614,
+          "image_xy": [
+            9.0,
+            377.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "26",
+          "class_id": 19,
+          "confidence": 0.932523787021637,
+          "image_xy": [
+            120.0,
+            675.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "27",
+          "class_id": 20,
+          "confidence": 0.07904034852981567,
+          "image_xy": [
+            361.0,
+            1098.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "28",
+          "class_id": 21,
+          "confidence": 0.9783579111099243,
+          "image_xy": [
+            447.0,
+            541.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "29",
+          "class_id": 22,
+          "confidence": 0.992598295211792,
+          "image_xy": [
+            510.0,
+            635.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "30",
+          "class_id": 23,
+          "confidence": 0.9930756092071533,
+          "image_xy": [
+            590.0,
+            755.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "31",
+          "class_id": 24,
+          "confidence": 0.9185598492622375,
+          "image_xy": [
+            496.0,
+            371.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "32",
+          "class_id": 25,
+          "confidence": 0.8183934092521667,
+          "image_xy": [
+            974.0,
+            964.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "33",
+          "class_id": 26,
+          "confidence": 0.9925852417945862,
+          "image_xy": [
+            1061.0,
+            581.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "34",
+          "class_id": 27,
+          "confidence": 0.8851677179336548,
+          "image_xy": [
+            925.0,
+            309.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "35",
+          "class_id": 28,
+          "confidence": 0.9116837978363037,
+          "image_xy": [
+            955.0,
+            337.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "37",
+          "class_id": 29,
+          "confidence": 0.9761354327201843,
+          "image_xy": [
+            1115.0,
+            478.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "38",
+          "class_id": 30,
+          "confidence": 0.9891341328620911,
+          "image_xy": [
+            1333.0,
+            679.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "40",
+          "class_id": 31,
+          "confidence": 0.5024341344833374,
+          "image_xy": [
+            1592.0,
+            902.0
+          ],
+          "source": "roboflow"
+        },
+        {
+          "class_name": "41",
+          "class_id": 32,
+          "confidence": 0.056785762310028076,
+          "image_xy": [
+            1681.0,
+            953.0
+          ],
+          "source": "roboflow"
+        }
+      ],
+      "valid": true,
+      "reason": null
+    }
+  ]
+}

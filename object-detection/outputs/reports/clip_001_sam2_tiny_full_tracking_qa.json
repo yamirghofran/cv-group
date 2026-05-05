@@ -1,0 +1,29 @@
+{
+  "video": "object-detection\\data\\raw\\clip_001.mp4",
+  "tracker_backend": "sam2",
+  "prompt_source": "detections_frame0",
+  "frames_expected": 189,
+  "tracks_initialized": 10,
+  "expected_track_entries": 1890,
+  "total_track_entries": 1890,
+  "missing_track_entries": 0,
+  "empty_masks": 0,
+  "average_track_area": 10787.274603174603,
+  "crop_summary": {
+    "crop_dir": "object-detection\\outputs\\crops\\clip_001_sam2_tiny_full",
+    "saved_crops": 70,
+    "crops_by_track": {
+      "1": 7,
+      "2": 7,
+      "3": 7,
+      "4": 7,
+      "5": 7,
+      "6": 7,
+      "7": 7,
+      "8": 7,
+      "9": 7,
+      "10": 7
+    },
+    "target_fps": 1.0
+  }
+}

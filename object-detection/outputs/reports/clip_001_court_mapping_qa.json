@@ -1,0 +1,23 @@
+{
+  "video": "object-detection\\data\\raw\\clip_001.mp4",
+  "homographies": 13,
+  "homography_source_frames": [
+    0,
+    15,
+    30,
+    45,
+    60,
+    75,
+    90,
+    105,
+    120,
+    135,
+    150,
+    165,
+    180
+  ],
+  "frames_projected": 189,
+  "missing_homography_frames": 0,
+  "invalid_player_points": 0,
+  "invalid_ball_points": 65
+}
