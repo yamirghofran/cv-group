@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import sys
 import uuid
 from dataclasses import dataclass, field
@@ -43,6 +44,7 @@ class ProcessResult:
     annotated_video_path: Path
     sam2_used: bool
     ocr_enabled: bool
+    teams_path: Path | None = None
     jersey_numbers: dict[int, list[dict[str, Any]]] = field(default_factory=dict)
     extras: dict[str, Any] = field(default_factory=dict)
 
@@ -56,6 +58,13 @@ def process_video(
     settings: ApiSettings,
 ) -> ProcessResult:
     """Run YOLO detection (always) and SAM2 tracking + render (if predictor is loaded).
+
+    When SAM2 tracking produces player crops, the pipeline also runs the
+    team-clustering stage and annotates the output video with team-coloured
+    overlays and labels.
+
+    When OCR is enabled and SAM2 tracking is active, jersey number recognition
+    is run as an additional step after tracking.
 
     Extension point for colleagues: append additional steps after detection or tracking
     using the artifacts in ``work_dir`` (detections.json, tracks.json, masks/, crops/).
@@ -73,16 +82,21 @@ def process_video(
     write_json(detections_path, detection_output.model_dump(mode="json"))
 
     annotated_video_path = work_dir / "annotated.mp4"
-    tracks_path = None
-    mask_dir = None
+    teams_path: Path | None = None
+    tracks_path: Path | None = None
+    mask_dir: Path | None = None
 
     if sam2_predictor is not None:
-        annotated_video_path, tracks_path, mask_dir = _run_tracking_and_render(
-            video_path=video_path,
-            detections_path=detections_path,
-            work_dir=work_dir,
-            sam2_predictor=sam2_predictor,
-            settings=settings,
+        crop_dir = work_dir / "crops"
+        annotated_video_path, tracks_path, mask_dir, teams_path = (
+            _run_tracking_and_render(
+                video_path=video_path,
+                detections_path=detections_path,
+                work_dir=work_dir,
+                crop_dir=crop_dir,
+                sam2_predictor=sam2_predictor,
+                settings=settings,
+            )
         )
     else:
         _render_yolo_overlay_video(
@@ -91,7 +105,7 @@ def process_video(
             output_path=annotated_video_path,
         )
 
-    # Run OCR if enabled and we have tracks
+    # Run OCR if enabled and we have tracks with masks
     jersey_numbers: dict[int, list[dict[str, Any]]] = {}
     if ocr_model is not None and tracks_path is not None and mask_dir is not None:
         jersey_numbers = _run_ocr_matching(
@@ -113,6 +127,7 @@ def process_video(
         annotated_video_path=annotated_video_path,
         sam2_used=sam2_predictor is not None,
         ocr_enabled=ocr_model is not None,
+        teams_path=teams_path,
         jersey_numbers=jersey_numbers,
     )
 
@@ -190,10 +205,14 @@ def _run_tracking_and_render(
     video_path: Path,
     detections_path: Path,
     work_dir: Path,
+    crop_dir: Path,
     sam2_predictor: Any,
     settings: ApiSettings,
-) -> tuple[Path, Path, Path]:
-    """Run SAM2 tracking, save results, and render video. Returns (video_path, tracks_path, mask_dir)."""
+) -> tuple[Path, Path, Path, Path | None]:
+    """Run SAM2 tracking, optional team clustering, and render the annotated video.
+
+    Returns ``(annotated_video_path, tracks_path, mask_dir, teams_path_or_none)``.
+    """
     metadata = video_metadata(video_path)
     width = int(metadata["width"])
     height = int(metadata["height"])
@@ -232,9 +251,81 @@ def _run_tracking_and_render(
     write_json(tracks_path, track_output.model_dump(mode="json"))
     write_json(work_dir / "tracking_qa.json", qa)
 
+    # Export player crops for downstream team clustering
+    from src.export_crops import export_crops
+
+    crop_summary = export_crops(
+        video_path, track_output.model_dump(mode="json"), crop_dir, target_fps=1.0
+    )
+    qa["crop_summary"] = crop_summary
+    write_json(work_dir / "tracking_qa.json", qa)
+
+    # --- Team clustering ---
+    teams_path: Path | None = None
+    team_lookup: dict[int, str] | None = None
+
+    if crop_summary.get("saved_crops", 0) > 0:
+        teams_path, team_lookup = _run_team_clustering(
+            crop_dir=crop_dir,
+            work_dir=work_dir,
+            settings=settings,
+        )
+        if team_lookup:
+            _enrich_tracks_with_teams(tracks_path, team_lookup)
+
     annotated_path = work_dir / "annotated.mp4"
-    render_track_video(video_path, tracks_path, annotated_path, mask_alpha=0.35)
-    return annotated_path, tracks_path, mask_dir
+    render_track_video(
+        video_path, tracks_path, annotated_path,
+        mask_alpha=0.35,
+        team_lookup=team_lookup,
+    )
+    return annotated_path, tracks_path, mask_dir, teams_path
+
+
+def _run_team_clustering(
+    *,
+    crop_dir: Path,
+    work_dir: Path,
+    settings: ApiSettings,
+) -> tuple[Path, dict[int, str]]:
+    """Run the team-clustering stage on exported crops.
+
+    Returns ``(teams_json_path, track_id_to_team_name_lookup)``.
+    """
+    from clustering.assign import build_track_team_lookup
+    from clustering.cli import run as run_clustering
+
+    teams_path = work_dir / "teams.json"
+    args = argparse.Namespace(
+        crops_dir=crop_dir,
+        output=teams_path,
+        device=settings.clustering_device,
+        batch_size=settings.clustering_batch_size,
+        n_teams=settings.clustering_n_teams,
+        method="siglip+umap+kmeans",
+    )
+    team_output = run_clustering(args)
+
+    team_lookup = build_track_team_lookup(team_output)
+    return teams_path, team_lookup
+
+
+def _enrich_tracks_with_teams(
+    tracks_path: Path,
+    team_lookup: dict[int, str],
+) -> None:
+    """Read *tracks_path*, annotate each TrackRecord with ``team_name``, and rewrite."""
+    import json
+
+    tracks_data = json.loads(tracks_path.read_text())
+
+    for frame in tracks_data.get("frames", []):
+        for track in frame.get("tracks", []):
+            track_id = track.get("track_id")
+            if track_id is not None and track_id in team_lookup:
+                track["team_name"] = team_lookup[track_id]
+
+    write_json(tracks_path, tracks_data)
 
 
 def _run_ocr_matching(

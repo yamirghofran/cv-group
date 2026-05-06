@@ -50,11 +50,21 @@ sam2 = [
 SAM-2 = { git = "https://github.com/facebookresearch/sam2.git" }
 
 [project.scripts]
+basketball-api = "api.app:run"
+basketball-ball-detect = "src.ball_tracking:main"
+basketball-court-finetune-download = "src.court_finetuning.download_dataset:main"
+basketball-court-finetune-predict = "src.court_finetuning.predict:main"
+basketball-court-finetune-train = "src.court_finetuning.train:main"
+basketball-court-keypoints = "src.court_keypoints:main"
 basketball-detect = "src.detection:main"
+basketball-export-crops = "src.export_crops:main"
+basketball-project-court = "src.project_to_court:main"
+basketball-team-bench = "clustering.cli:bench_main"
+basketball-team-cluster = "clustering.cli:cluster_main"
 basketball-track = "src.tracking:main"
+basketball-visualize-court = "src.visualize_court:main"
 basketball-visualize-detections = "src.visualize_detections:main"
 basketball-visualize-tracks = "src.visualize_tracks:main"
-basketball-export-crops = "src.export_crops:main"
 basketball-train-resnet = "jersey_numbers.ocr.resnet:main"
 basketball-train-smolvlm2 = "scripts.train_smolvlm2:main"
 basketball-train-resnet18 = "jersey_numbers.ocr.resnet18:main"
@@ -63,9 +73,6 @@ basketball-eval-resnet = "evaluation.eval_resnet:main"
 basketball-eval-resnet18 = "evaluation.eval_resnet18:main"
 basketball-eval-matching = "evaluation.eval_matching:main"
 basketball-eval-smolvlm2 = "evaluation.eval_smolvlm2:main"
-basketball-team-cluster = "clustering.cli:cluster_main"
-basketball-team-bench = "clustering.cli:bench_main"
-basketball-api = "api.app:run"
 
 [build-system]
 requires = ["setuptools>=69"]

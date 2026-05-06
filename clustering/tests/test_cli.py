@@ -8,6 +8,7 @@ import pytest
 from clustering.cli import DEFAULT_METHOD, parse_args, run
 
 FIXTURES = Path(__file__).parent / "fixtures" / "sample_crops"
+TRACK_FIXTURES = Path(__file__).parent / "fixtures" / "track_crops"
 
 
 class _StubClassifier:
@@ -193,3 +194,116 @@ def test_run_passes_n_teams_through_to_output(tmp_path: Path) -> None:
 
     output = run(args, classifier_factory=_StubClassifier)
     assert output.n_teams == 3
+
+
+# ---------------------------------------------------------------------------
+# Hierarchical track_*/ crop loading + track_id + team_name
+# ---------------------------------------------------------------------------
+
+
+def test_run_populates_track_id_from_hierarchical_dirs(tmp_path: Path) -> None:
+    args = argparse.Namespace(
+        crops_dir=TRACK_FIXTURES,
+        output=tmp_path / "out.json",
+        device="cpu",
+        batch_size=32,
+        n_teams=2,
+        method=DEFAULT_METHOD,
+    )
+
+    output = run(args, classifier_factory=_StubClassifier)
+
+    # All 6 crops should have a track_id
+    assert len(output.assignments) == 6
+    track_ids = {a.track_id for a in output.assignments}
+    assert track_ids == {1, 2}
+
+
+def test_run_auto_assigns_team_names(tmp_path: Path) -> None:
+    args = argparse.Namespace(
+        crops_dir=FIXTURES,
+        output=tmp_path / "out.json",
+        device="cpu",
+        batch_size=32,
+        n_teams=2,
+        method=DEFAULT_METHOD,
+    )
+
+    output = run(args, classifier_factory=_StubClassifier)
+
+    # cluster_to_team_name should be auto-populated
+    assert output.cluster_to_team_name == {0: "Team A", 1: "Team B"}
+
+    # Every assignment should have a team_name
+    for a in output.assignments:
+        assert a.team_name is not None
+        assert a.team_name in {"Team A", "Team B"}
+
+
+def test_run_auto_assigns_team_names_for_n_teams_3(tmp_path: Path) -> None:
+    args = argparse.Namespace(
+        crops_dir=FIXTURES,
+        output=tmp_path / "out.json",
+        device="cpu",
+        batch_size=32,
+        n_teams=3,
+        method=DEFAULT_METHOD,
+    )
+
+    output = run(args, classifier_factory=_StubClassifier)
+
+    assert output.cluster_to_team_name == {0: "Team A", 1: "Team B", 2: "Team C"}
+
+
+def test_run_team_name_matches_cluster_id(tmp_path: Path) -> None:
+    args = argparse.Namespace(
+        crops_dir=FIXTURES,
+        output=tmp_path / "out.json",
+        device="cpu",
+        batch_size=32,
+        n_teams=2,
+        method=DEFAULT_METHOD,
+    )
+
+    output = run(args, classifier_factory=_StubClassifier)
+
+    for a in output.assignments:
+        if a.cluster_id == 0:
+            assert a.team_name == "Team A"
+        else:
+            assert a.team_name == "Team B"
+
+
+def test_run_flat_crops_have_none_track_id(tmp_path: Path) -> None:
+    args = argparse.Namespace(
+        crops_dir=FIXTURES,
+        output=tmp_path / "out.json",
+        device="cpu",
+        batch_size=32,
+        n_teams=2,
+        method=DEFAULT_METHOD,
+    )
+
+    output = run(args, classifier_factory=_StubClassifier)
+
+    for a in output.assignments:
+        assert a.track_id is None
+
+
+def test_run_writes_team_names_to_json(tmp_path: Path) -> None:
+    args = argparse.Namespace(
+        crops_dir=FIXTURES,
+        output=tmp_path / "out.json",
+        device="cpu",
+        batch_size=32,
+        n_teams=2,
+        method=DEFAULT_METHOD,
+    )
+
+    run(args, classifier_factory=_StubClassifier)
+
+    on_disk = json.loads((tmp_path / "out.json").read_text())
+    assert on_disk["cluster_to_team_name"] == {"0": "Team A", "1": "Team B"}
+    for a in on_disk["assignments"]:
+        assert "team_name" in a
+        assert a["team_name"] in {"Team A", "Team B"}

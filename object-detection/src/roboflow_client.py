@@ -8,7 +8,7 @@ from typing import Any
 import cv2
 import requests
 
-from .schemas import DetectionRecord
+from .schemas import CourtKeypointRecord, DetectionRecord
 from .utils import clamp_bbox_xyxy
 
 
@@ -107,3 +107,30 @@ def normalize_roboflow_predictions(
             )
         )
     return records
+
+
+def normalize_roboflow_keypoints(payload: dict[str, Any], source: str = "roboflow") -> list[CourtKeypointRecord]:
+    predictions = payload.get("predictions", [])
+    if not isinstance(predictions, list):
+        raise ValueError("Roboflow payload field 'predictions' must be a list")
+
+    keypoints: list[CourtKeypointRecord] = []
+    for prediction in predictions:
+        if not isinstance(prediction, dict):
+            continue
+        for keypoint in prediction.get("keypoints", []) or []:
+            if not isinstance(keypoint, dict):
+                continue
+            class_id = keypoint.get("class_id")
+            if class_id is None:
+                continue
+            keypoints.append(
+                CourtKeypointRecord(
+                    class_name=str(keypoint.get("class_name") or keypoint.get("class") or class_id),
+                    class_id=int(class_id),
+                    confidence=float(keypoint.get("confidence", 0.0)),
+                    image_xy=[float(keypoint.get("x", 0.0)), float(keypoint.get("y", 0.0))],
+                    source=source,
+                )
+            )
+    return keypoints
