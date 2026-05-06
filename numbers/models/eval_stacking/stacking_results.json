@@ -1,0 +1,11 @@
+{
+  "resnet34_accuracy": 0.9916897506925207,
+  "resnet18_accuracy": 0.9224376731301939,
+  "smolvlm2_accuracy": 0.8836565096952909,
+  "hard_voting_accuracy": 0.9695290858725761,
+  "stacking_accuracy": 0.9224376731301939,
+  "meta_train_samples": 361,
+  "meta_test_samples": 361,
+  "feature_dim": 126,
+  "lr_C": 1.0
+}

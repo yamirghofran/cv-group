@@ -49,26 +49,33 @@ def train(
     le = LabelEncoder()
     le.fit(class_names)
 
-    y_train = le.transform(train_data["true_labels"])
-    y_test = le.transform(test_data["true_labels"])
+    train_mask = np.array([l in class_names for l in train_data["true_labels"]])
+    test_mask = np.array([l in class_names for l in test_data["true_labels"]])
+    if not train_mask.all():
+        print(f"Warning: skipping {(~train_mask).sum()} train samples with unknown labels")
+    if not test_mask.all():
+        print(f"Warning: skipping {(~test_mask).sum()} test samples with unknown labels")
+
+    y_train = le.transform(train_data["true_labels"][train_mask])
+    y_test = le.transform(test_data["true_labels"][test_mask])
 
     X_train = np.concatenate([
-        train_data["resnet34_probs"],
-        train_data["resnet18_probs"],
-        train_data["smolvlm2_probs"],
+        train_data["resnet34_probs"][train_mask],
+        train_data["resnet18_probs"][train_mask],
+        train_data["smolvlm2_probs"][train_mask],
     ], axis=1)
 
     X_test = np.concatenate([
-        test_data["resnet34_probs"],
-        test_data["resnet18_probs"],
-        test_data["smolvlm2_probs"],
+        test_data["resnet34_probs"][test_mask],
+        test_data["resnet18_probs"][test_mask],
+        test_data["smolvlm2_probs"][test_mask],
     ], axis=1)
 
     print(f"Meta-train: {X_train.shape[0]} samples | Meta-test: {X_test.shape[0]} samples")
     print(f"Feature dim: {X_train.shape[1]} ({len(class_names)} classes × 3 models)")
 
     print("\nTraining Logistic Regression meta-model...")
-    clf = LogisticRegression(C=C, max_iter=max_iter, multi_class="multinomial", solver="lbfgs")
+    clf = LogisticRegression(C=C, max_iter=max_iter, solver="lbfgs")
     clf.fit(X_train, y_train)
 
     ensemble = StackingEnsemble(
@@ -83,12 +90,12 @@ def train(
     stacking_preds = clf.predict(X_test)
     stacking_acc = accuracy_score(y_test, stacking_preds)
 
-    resnet34_acc = _individual_accuracy(test_data["resnet34_probs"], le.transform(test_data["true_labels"]))
-    resnet18_acc = _individual_accuracy(test_data["resnet18_probs"], le.transform(test_data["true_labels"]))
-    smolvlm2_acc = _individual_accuracy(test_data["smolvlm2_probs"], le.transform(test_data["true_labels"]))
+    resnet34_acc = _individual_accuracy(test_data["resnet34_probs"][test_mask], y_test)
+    resnet18_acc = _individual_accuracy(test_data["resnet18_probs"][test_mask], y_test)
+    smolvlm2_acc = _individual_accuracy(test_data["smolvlm2_probs"][test_mask], y_test)
     vote_acc = _hard_vote_accuracy(
-        [test_data["resnet34_probs"], test_data["resnet18_probs"], test_data["smolvlm2_probs"]],
-        le.transform(test_data["true_labels"]),
+        [test_data["resnet34_probs"][test_mask], test_data["resnet18_probs"][test_mask], test_data["smolvlm2_probs"][test_mask]],
+        y_test,
     )
 
     print("\n" + "=" * 45)

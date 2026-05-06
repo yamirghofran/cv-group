@@ -25,6 +25,27 @@ def _load_jsonl(path: Path) -> list[dict]:
     return entries
 
 
+def _load_imagefolder(split_dir: Path) -> list[dict]:
+    entries = []
+    for cls_dir in sorted(split_dir.iterdir()):
+        if not cls_dir.is_dir():
+            continue
+        for img in sorted(cls_dir.iterdir()):
+            if img.suffix.lower() in {".jpg", ".jpeg", ".png"}:
+                entries.append({"image": str(img), "answer": cls_dir.name})
+    return entries
+
+
+def _load_split(data_dir: Path, split: str) -> list[dict] | None:
+    jsonl_path = data_dir / f"{split}.jsonl"
+    if jsonl_path.exists():
+        return _load_jsonl(jsonl_path)
+    split_dir = data_dir / split
+    if split_dir.exists() and split_dir.is_dir():
+        return _load_imagefolder(split_dir)
+    return None
+
+
 def _load_bgr(img_path: str) -> np.ndarray:
     bgr = cv2.imread(img_path)
     if bgr is None:
@@ -64,12 +85,11 @@ def build(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for split in splits:
-        jsonl_path = data_dir / f"{split}.jsonl"
-        if not jsonl_path.exists():
-            print(f"Skipping {split} — {jsonl_path} not found")
+        entries = _load_split(data_dir, split)
+        if entries is None:
+            print(f"Skipping {split} — no JSONL or ImageFolder found in {data_dir}")
             continue
 
-        entries = _load_jsonl(jsonl_path)
         print(f"\nProcessing {split} ({len(entries)} images)...")
 
         image_paths = []
