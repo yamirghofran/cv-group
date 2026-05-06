@@ -23,6 +23,7 @@ object-detection/court_finetuning/runs/
 hf-court-yolo11m-pose/
 third_party/sam2/
 
+numbers/data/
 # Clustering generated/local files
 clustering/outputs/
 clustering/data/
@@ -44,5 +45,7 @@ object-detection/finetuning/runs/basketball_yolo11s/weights/*
 context/
 .DS_Store
 
+numbers/data/
+numbers/checkpoints/
 # Per-machine Claude Code permissions
 .claude/settings.local.json

@@ -18,6 +18,14 @@ dependencies = [
     "torch>=2.1",
     "torchvision>=0.20.1",
     "tqdm>=4.66",
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    "pillow>=10.0",
+    "transformers>=4.45",
+    "peft>=0.12",
+    "roboflow>=1.1",
+    "inference>=1.2.7",
+    "scikit-learn>=1.8.0",
     "ultralytics>=8.3",
     "uvicorn[standard]>=0.27",
 ]
@@ -57,16 +65,24 @@ basketball-track = "src.tracking:main"
 basketball-visualize-court = "src.visualize_court:main"
 basketball-visualize-detections = "src.visualize_detections:main"
 basketball-visualize-tracks = "src.visualize_tracks:main"
+basketball-train-resnet = "jersey_numbers.ocr.resnet:main"
+basketball-train-smolvlm2 = "scripts.train_smolvlm2:main"
+basketball-train-resnet18 = "jersey_numbers.ocr.resnet18:main"
+basketball-match-numbers = "jersey_numbers.matching.ios:main"
+basketball-eval-resnet = "evaluation.eval_resnet:main"
+basketball-eval-resnet18 = "evaluation.eval_resnet18:main"
+basketball-eval-matching = "evaluation.eval_matching:main"
+basketball-eval-smolvlm2 = "evaluation.eval_smolvlm2:main"
 
 [build-system]
 requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["object-detection", "."]
-include = ["src*", "clustering*", "api*"]
+where = ["object-detection", "numbers", "."]
+include = ["src*", "jersey_numbers*", "evaluation*", "scripts*", "clustering*", "api*"]
 exclude = ["object-detection*", "third_party*", "tests*", "docs*", "data*", "outputs*", "checkpoints*"]
 
 [tool.pytest.ini_options]
-testpaths = ["object-detection/tests", "clustering/tests"]
-pythonpath = ["object-detection", "."]
+testpaths = ["object-detection/tests", "numbers/tests", "clustering/tests"]
+pythonpath = ["object-detection", "numbers", "."]
