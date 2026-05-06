@@ -87,7 +87,7 @@ class ApiSettings:
             clustering_n_teams=_env_int("BASKETBALL_API_CLUSTERING_N_TEAMS", 2),
             # OCR Settings
             ocr_enabled=_env_bool("BASKETBALL_API_OCR_ENABLED", False),
-            ocr_model_name=_env("BASKETBALL_API_OCR_MODEL", "resnet") or "resnet",
+            ocr_model_name=_env("BASKETBALL_API_OCR_MODEL", "resnet18") or "resnet18",
             ocr_ios_threshold=_env_float("BASKETBALL_API_OCR_IOS_THRESHOLD", 0.9),
             ocr_device=_env("BASKETBALL_API_OCR_DEVICE", "auto") or "auto",
         )

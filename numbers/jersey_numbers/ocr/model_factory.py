@@ -79,6 +79,10 @@ def create_ocr_model(
     """
     name = model_name.lower().strip()
 
+    # Normalize aliases
+    _ALIASES = {"resnet": "resnet18", "x2": "resnet34"}
+    name = _ALIASES.get(name, name)
+
     # Handle API-based models (smol/smolvlm2)
     if name in API_MODELS:
         api_key = os.getenv("ROBOFLOW_API_KEY")
