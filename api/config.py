@@ -43,6 +43,11 @@ class ApiSettings:
     cleanup_distance_threshold: float
     cleanup_min_component_area: int
     max_upload_mb: int
+    # OCR Settings
+    ocr_enabled: bool
+    ocr_model_name: str  # "resnet", "x2", or "smol"
+    ocr_ios_threshold: float
+    ocr_device: str
 
     @classmethod
     def from_env(cls) -> "ApiSettings":
@@ -74,4 +79,9 @@ class ApiSettings:
             cleanup_distance_threshold=_env_float("BASKETBALL_API_CLEANUP_DIST", 80.0),
             cleanup_min_component_area=_env_int("BASKETBALL_API_CLEANUP_MIN_AREA", 50),
             max_upload_mb=_env_int("BASKETBALL_API_MAX_UPLOAD_MB", 500),
+            # OCR Settings
+            ocr_enabled=_env_bool("BASKETBALL_API_OCR_ENABLED", False),
+            ocr_model_name=_env("BASKETBALL_API_OCR_MODEL", "resnet") or "resnet",
+            ocr_ios_threshold=_env_float("BASKETBALL_API_OCR_IOS_THRESHOLD", 0.9),
+            ocr_device=_env("BASKETBALL_API_OCR_DEVICE", "auto") or "auto",
         )
