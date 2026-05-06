@@ -20,7 +20,13 @@ class YoloCourtKeypointClient:
     def __init__(self, settings: YoloCourtKeypointSettings) -> None:
         weights_path = Path(settings.weights)
         if not weights_path.exists():
-            raise FileNotFoundError(f"YOLO court keypoint weights not found: {weights_path}")
+            raise FileNotFoundError(
+                "YOLO court keypoint weights not found: "
+                f"{weights_path}. Download the shared checkpoint with: "
+                "uvx hf download AnzeZ/basketball-court-yolo11m-pose best.pt "
+                "--revision 4499465f27dfa29ffa6fe621d71124394375c1d8 "
+                "--local-dir object-detection/models/court_yolo11m_pose_v19"
+            )
         try:
             from ultralytics import YOLO
         except ImportError as exc:

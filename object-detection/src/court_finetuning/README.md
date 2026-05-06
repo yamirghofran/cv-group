@@ -99,12 +99,21 @@ uv run basketball-court-finetune-predict \
 
 ## Use In Court Mapping
 
+For the shared fine-tuned checkpoint, download from Hugging Face:
+
+```bash
+mkdir -p object-detection/models/court_yolo11m_pose_v19
+uvx hf download AnzeZ/basketball-court-yolo11m-pose best.pt \
+  --revision 4499465f27dfa29ffa6fe621d71124394375c1d8 \
+  --local-dir object-detection/models/court_yolo11m_pose_v19
+```
+
 Replace Roboflow API keypoint inference with local YOLO:
 
 ```bash
 uv run basketball-court-keypoints \
   --backend yolo \
-  --weights object-detection/court_finetuning/runs/court_yolo11m_pose_v19/weights/best.pt \
+  --weights object-detection/models/court_yolo11m_pose_v19/best.pt \
   --device 0 \
   --video object-detection/data/raw/clip_001.mp4 \
   --output object-detection/outputs/court_keypoints/clip_001_yolo_keypoints.json \

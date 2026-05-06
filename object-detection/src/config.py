@@ -60,7 +60,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "model_version": 19,
         "confidence": 30,
         "overlap": 30,
-        "yolo_weights": "object-detection/court_finetuning/runs/court_yolo11m_pose_v19/weights/best.pt",
+        "yolo_weights": "object-detection/models/court_yolo11m_pose_v19/best.pt",
         "yolo_confidence": 0.25,
         "yolo_device": "auto",
         "keypoint_confidence": 0.5,
