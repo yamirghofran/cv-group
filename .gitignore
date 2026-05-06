@@ -15,8 +15,6 @@ wheels/
 
 # Object detection generated/local files
 object-detection/outputs/
-object-detection/data/raw/
-object-detection/data/court-yolo/
 object-detection/data/
 object-detection/models/
 object-detection/checkpoints/
@@ -25,6 +23,26 @@ object-detection/court_finetuning/runs/
 hf-court-yolo11m-pose/
 third_party/sam2/
 
+# Clustering generated/local files
+clustering/outputs/
+clustering/data/
+
+# YOLO finetuning artifacts
+object-detection/finetuning/runs/
+object-detection/finetuning/checkpoints/
+runs/
+*.pt
+
+# Keep the finetuned basketball YOLO weights checked in
+!object-detection/finetuning/runs/basketball_yolo11s/
+object-detection/finetuning/runs/basketball_yolo11s/*
+!object-detection/finetuning/runs/basketball_yolo11s/weights/
+object-detection/finetuning/runs/basketball_yolo11s/weights/*
+!object-detection/finetuning/runs/basketball_yolo11s/weights/best.pt
+
 # Other files
 context/
 .DS_Store
+
+# Per-machine Claude Code permissions
+.claude/settings.local.json

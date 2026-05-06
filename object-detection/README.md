@@ -19,19 +19,26 @@ cp object-detection/.env.example .env
 
 Set `ROBOFLOW_API_KEY` in `.env`.
 
-SAM2 is not bundled by PyPI in a stable way for every platform. Install it from Meta's repository or your course-provided setup, then set the checkpoint and config paths:
+SAM2 is not bundled by PyPI in a stable way for every platform. It's declared as the `sam2` extra in `pyproject.toml` (sourced from Meta's GitHub repo via `[tool.uv.sources]`), so a single sync installs the Python package:
+
+```bash
+SAM2_BUILD_CUDA=0 uv sync --extra dev --extra sam2
+```
+
+Pass every extra you need on each `uv sync` — the resolver uninstalls anything you omit.
+
+`SAM2_BUILD_CUDA=0` is recommended on macOS/MPS machines because the optional CUDA extension needs NVIDIA CUDA. On a CUDA host, drop the env var.
+
+The `sam2` package does not ship the model weights. Clone the upstream repo once just for its checkpoint script and copy the file into the checkpoints dir:
 
 ```bash
 git clone https://github.com/facebookresearch/sam2.git third_party/sam2
-SAM2_BUILD_CUDA=0 uv pip install -e "third_party/sam2"
 mkdir -p object-detection/checkpoints
 cd third_party/sam2/checkpoints
 ./download_ckpts.sh
 cd ../../..
 cp third_party/sam2/checkpoints/sam2.1_hiera_large.pt object-detection/checkpoints/
 ```
-
-`SAM2_BUILD_CUDA=0` is recommended on macOS/MPS machines because the optional CUDA extension needs NVIDIA CUDA.
 
 Verify the install:
 

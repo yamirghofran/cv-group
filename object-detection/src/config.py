@@ -6,6 +6,9 @@ from typing import Any
 
 
 DEFAULT_CONFIG: dict[str, Any] = {
+    "detector": {
+        "backend": "yolo",
+    },
     "roboflow": {
         "api_url": "https://detect.roboflow.com",
         "model_id": "basketball-player-detection-3-ycjdo",
@@ -13,6 +16,13 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "confidence": 40,
         "overlap": 30,
         "timeout_seconds": 60,
+    },
+    "yolo": {
+        "weights_path": "object-detection/finetuning/runs/basketball_yolo11s/weights/best.pt",
+        "imgsz": 640,
+        "conf": 0.25,
+        "iou": 0.5,
+        "device": None,
     },
     "detection": {
         "frame_stride": 5,
@@ -30,6 +40,9 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "relevant_classes": [
             "ball",
             "ball-in-basket",
+            "ball_vis_full",
+            "ball_vis_partial",
+            "ball_vis_visible",
             "number",
             "player",
             "player-in-possession",
