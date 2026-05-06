@@ -47,9 +47,9 @@ def process_video(
 ) -> ProcessResult:
     """Run YOLO detection (always) and SAM2 tracking + render (if predictor is loaded).
 
-    When ``settings.clustering_enabled`` is ``True`` *and* SAM2 tracking
-    produced player crops, the pipeline also runs the team-clustering stage
-    and annotates the output video with team-coloured overlays and labels.
+    When SAM2 tracking produces player crops, the pipeline also runs the
+    team-clustering stage and annotates the output video with team-coloured
+    overlays and labels.
 
     Extension point for colleagues: append additional steps after detection or tracking
     using the artifacts in ``work_dir`` (detections.json, tracks.json, masks/, crops/).
@@ -226,11 +226,11 @@ def _run_tracking_and_render(
     qa["crop_summary"] = crop_summary
     write_json(work_dir / "tracking_qa.json", qa)
 
-    # --- Team clustering (optional) ---
+    # --- Team clustering ---
     teams_path: Path | None = None
     team_lookup: dict[int, str] | None = None
 
-    if settings.clustering_enabled and crop_summary.get("saved_crops", 0) > 0:
+    if crop_summary.get("saved_crops", 0) > 0:
         teams_path, team_lookup = _run_team_clustering(
             crop_dir=crop_dir,
             work_dir=work_dir,
