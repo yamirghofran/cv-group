@@ -16,7 +16,11 @@ wheels/
 # Object detection generated/local files
 object-detection/outputs/
 object-detection/data/
+object-detection/models/
 object-detection/checkpoints/
+object-detection/court_finetuning/checkpoints/
+object-detection/court_finetuning/runs/
+hf-court-yolo11m-pose/
 third_party/sam2/
 
 # Clustering generated/local files
