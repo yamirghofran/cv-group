@@ -43,6 +43,10 @@ class ApiSettings:
     cleanup_distance_threshold: float
     cleanup_min_component_area: int
     max_upload_mb: int
+    clustering_enabled: bool
+    clustering_device: str
+    clustering_batch_size: int
+    clustering_n_teams: int
 
     @classmethod
     def from_env(cls) -> "ApiSettings":
@@ -74,4 +78,8 @@ class ApiSettings:
             cleanup_distance_threshold=_env_float("BASKETBALL_API_CLEANUP_DIST", 80.0),
             cleanup_min_component_area=_env_int("BASKETBALL_API_CLEANUP_MIN_AREA", 50),
             max_upload_mb=_env_int("BASKETBALL_API_MAX_UPLOAD_MB", 500),
+            clustering_enabled=_env_bool("BASKETBALL_API_CLUSTERING_ENABLED", False),
+            clustering_device=_env("BASKETBALL_API_CLUSTERING_DEVICE", "cpu") or "cpu",
+            clustering_batch_size=_env_int("BASKETBALL_API_CLUSTERING_BATCH_SIZE", 32),
+            clustering_n_teams=_env_int("BASKETBALL_API_CLUSTERING_N_TEAMS", 2),
         )

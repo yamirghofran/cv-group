@@ -79,6 +79,8 @@ class TrackRecord(PipelineModel):
     area: int
     score: float | None = None
     source_prompt_bbox_xyxy: list[float]
+    team_name: str | None = None
+    jersey_number: str | None = None
 
 
 class TrackFrame(PipelineModel):
