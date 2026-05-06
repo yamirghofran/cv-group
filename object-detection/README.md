@@ -46,7 +46,19 @@ Verify the install:
 uv run python -c "import sam2, torch, torchvision; print('sam2 ok'); print(torch.__version__, torchvision.__version__)"
 ```
 
-Then run real SAM2 tracking:
+Use `--tracker-backend mock` for smoke tests before SAM2 is installed.
+
+## Quick Run: Tracking Only
+
+This path produces object detections, SAM2 player tracks/masks, player crops, a tracking QA report, and an annotated tracking video. It does not produce the 2D court view.
+
+```bash
+uv run basketball-detect \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --output object-detection/outputs/detections/clip_001_detections.json \
+  --debug-video object-detection/outputs/videos/clip_001_detections.mp4 \
+  --frame-stride 5
+```
 
 ```bash
 uv run basketball-track \
@@ -55,10 +67,76 @@ uv run basketball-track \
   --sam2-checkpoint object-detection/checkpoints/sam2.1_hiera_large.pt \
   --sam2-model-cfg configs/sam2.1/sam2.1_hiera_l.yaml \
   --output object-detection/outputs/tracks/clip_001_tracks.json \
-  --mask-dir object-detection/outputs/masks/clip_001
+  --mask-dir object-detection/outputs/masks/clip_001 \
+  --crop-dir object-detection/outputs/crops/clip_001 \
+  --qa-report object-detection/outputs/reports/clip_001_tracking_qa.json
 ```
 
-Use `--tracker-backend mock` for smoke tests before SAM2 is installed.
+```bash
+uv run basketball-visualize-tracks \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --tracks object-detection/outputs/tracks/clip_001_tracks.json \
+  --output object-detection/outputs/videos/clip_001_tracks.mp4
+```
+
+The main visual output is:
+
+```text
+object-detection/outputs/videos/clip_001_tracks.mp4
+```
+
+## Quick Run: Tracking + 2D Court View
+
+Run the tracking-only commands first. Then add ball detection, court keypoint detection, court projection, and the side-by-side court visualization.
+
+To use the fine-tuned local court model, download it once:
+
+```bash
+mkdir -p object-detection/models/court_yolo11m_pose_v19
+uvx hf download AnzeZ/basketball-court-yolo11m-pose best.pt \
+  --revision 4499465f27dfa29ffa6fe621d71124394375c1d8 \
+  --local-dir object-detection/models/court_yolo11m_pose_v19
+```
+
+```bash
+uv run basketball-court-keypoints \
+  --backend yolo \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --output object-detection/outputs/court_keypoints/clip_001_yolo_keypoints.json \
+  --debug-frame-dir object-detection/outputs/debug_court_keypoints/clip_001_yolo \
+  --frame-stride 15
+```
+
+```bash
+uv run basketball-ball-detect \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --output object-detection/outputs/ball/clip_001_ball.json \
+  --frame-stride 1
+```
+
+```bash
+uv run basketball-project-court \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --tracks object-detection/outputs/tracks/clip_001_tracks.json \
+  --court-keypoints object-detection/outputs/court_keypoints/clip_001_yolo_keypoints.json \
+  --ball object-detection/outputs/ball/clip_001_ball.json \
+  --output object-detection/outputs/court_tracks/clip_001_court_tracks.json \
+  --qa-report object-detection/outputs/reports/clip_001_court_mapping_qa.json
+```
+
+```bash
+uv run basketball-visualize-court \
+  --video object-detection/data/raw/clip_001.mp4 \
+  --tracks object-detection/outputs/tracks/clip_001_tracks.json \
+  --court-tracks object-detection/outputs/court_tracks/clip_001_court_tracks.json \
+  --output object-detection/outputs/videos/clip_001_2d_court_movement.mp4
+```
+
+The main court-view output is:
+
+```text
+object-detection/outputs/videos/clip_001_2d_court_movement.mp4
+```
 
 ## Detection
 
