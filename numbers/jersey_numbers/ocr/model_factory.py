@@ -10,26 +10,57 @@ from pathlib import Path
 from typing import Literal
 
 import numpy as np
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from .resnet18 import ResNet18OCR
 from .resnet34 import ResNetOCR
 from .smolvlm2 import RoboflowOCR
 
+_NUMBERS_ROOT = Path(__file__).parent.parent.parent
+
 # Hardcoded checkpoint paths for local models
 CHECKPOINT_PATHS = {
-    "resnet18": "numbers/models/resnet18.pth",
-    "resnet34": "numbers/models/resnet34.pth",
+    "resnet18": str(_NUMBERS_ROOT / "models/resnet18.pth"),
+    "resnet34": str(_NUMBERS_ROOT / "models/resnet34.pth"),
+    "stacking": str(_NUMBERS_ROOT / "models/stacking_ensemble.pkl"),
 }
 
 # API model settings
 API_MODELS = {
-    "smol": "jersey-number-ocr/1",  # Update with your actual Roboflow model ID
-    "smolvlm2": "jersey-number-ocr/1",
+    "smol": "basketball-jersey-numbers-ocr/3",
+    "smolvlm2": "basketball-jersey-numbers-ocr/3",
 }
 
 
+class StackingOCRModel:
+    """Wraps the stacking ensemble behind the standard predict(bgr) -> (str, float) interface."""
+
+    def __init__(self, ensemble_path: Path, device: str = "auto") -> None:
+        from jersey_numbers.ensemble.stacking import StackingEnsemble
+
+        api_key = os.getenv("ROBOFLOW_API_KEY")
+        if not api_key:
+            raise RuntimeError("ROBOFLOW_API_KEY environment variable required for stacking model")
+
+        self._resnet34 = ResNetOCR(Path(CHECKPOINT_PATHS["resnet34"]), device_str=device)
+        self._resnet18 = ResNet18OCR(Path(CHECKPOINT_PATHS["resnet18"]), device_str=device)
+        self._smolvlm2 = RoboflowOCR(model_id=API_MODELS["smolvlm2"], api_key=api_key)
+        self._ensemble = StackingEnsemble.load(ensemble_path)
+
+    def predict(self, bgr_image: np.ndarray) -> tuple[str, float]:
+        raw34, _ = self._resnet34.predict_proba(bgr_image)
+        raw18, _ = self._resnet18.predict_proba(bgr_image)
+        probs_vlm = self._smolvlm2.predict_proba(bgr_image, self._ensemble.class_names)
+        return self._ensemble.predict(raw34, raw18, probs_vlm)
+
+    def predict_batch(self, bgr_images: list[np.ndarray]) -> list[tuple[str, float]]:
+        return [self.predict(img) for img in bgr_images]
+
+
 def create_ocr_model(
-    model_name: Literal["resnet", "resnet18", "x2", "resnet34", "smol", "smolvlm2"],
+    model_name: Literal["resnet", "resnet18", "x2", "resnet34", "smol", "smolvlm2", "stacking"],
     device: str = "auto",
 ):
     """
@@ -76,6 +107,8 @@ def create_ocr_model(
         return ResNet18OCR(checkpoint_path, device_str=device)
     elif name in ("x2", "resnet34"):
         return ResNetOCR(checkpoint_path, device_str=device)
+    elif name == "stacking":
+        return StackingOCRModel(checkpoint_path, device=device)
     else:
         raise ValueError(f"Model '{model_name}' not implemented")
 
@@ -114,7 +147,7 @@ def predict_number(model_name: str, bgr_image: np.ndarray, device: str = "auto")
 
 
 def create_ocr_model_number_only(
-    model_name: Literal["resnet", "resnet18", "x2", "resnet34", "smol", "smolvlm2"],
+    model_name: Literal["resnet", "resnet18", "x2", "resnet34", "smol", "smolvlm2", "stacking"],
     device: str = "auto",
 ):
     """
