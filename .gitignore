@@ -15,11 +15,20 @@ wheels/
 
 # Object detection generated/local files
 object-detection/outputs/
-object-detection/data/raw/
+object-detection/data/
 object-detection/checkpoints/
 third_party/sam2/
 
 numbers/data/
+# Clustering generated/local files
+clustering/outputs/
+clustering/data/
+
+# YOLO finetuning artifacts
+object-detection/finetuning/runs/
+object-detection/finetuning/checkpoints/
+runs/
+*.pt
 
 # Other files
 context/
@@ -27,3 +36,5 @@ context/
 
 numbers/data/
 numbers/checkpoints/
+# Per-machine Claude Code permissions
+.claude/settings.local.json

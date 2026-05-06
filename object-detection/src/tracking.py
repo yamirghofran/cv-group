@@ -146,21 +146,27 @@ def sam2_track_masks(
     model_cfg: str,
     device: str,
     max_frames: int | None = None,
+    predictor: Any | None = None,
 ) -> Iterator[tuple[int, int, np.ndarray, float | None]]:
     try:
         import torch
-        from sam2.build_sam import build_sam2_video_predictor
     except ImportError as exc:
-        raise RuntimeError(
-            "SAM2 is not installed. Install SAM2, or run with --tracker-backend mock for smoke tests."
-        ) from exc
+        raise RuntimeError("PyTorch not installed.") from exc
+    if predictor is None:
+        try:
+            from sam2.build_sam import build_sam2_video_predictor
+        except ImportError as exc:
+            raise RuntimeError(
+                "SAM2 is not installed. Install SAM2, or run with --tracker-backend mock for smoke tests."
+            ) from exc
 
     with tempfile.TemporaryDirectory(prefix="sam2_frames_") as temp_dir:
         frame_count = write_video_frames_to_directory(video_path, temp_dir, max_frames=max_frames)
         if frame_count == 0:
             raise RuntimeError(f"No frames extracted from video: {video_path}")
 
-        predictor = build_sam2_video_predictor(model_cfg, checkpoint, device=device)
+        if predictor is None:
+            predictor = build_sam2_video_predictor(model_cfg, checkpoint, device=device)
         inference_state = predictor.init_state(video_path=temp_dir)
         if hasattr(predictor, "reset_state"):
             predictor.reset_state(inference_state)
@@ -194,6 +200,7 @@ def build_track_output(
     cleanup_distance_threshold: float,
     cleanup_min_component_area: int,
     max_frames: int | None,
+    predictor: Any | None = None,
 ) -> tuple[TrackOutput, dict[str, Any]]:
     metadata = video_metadata(video_path)
     fps = float(metadata["fps"])
@@ -214,7 +221,15 @@ def build_track_output(
     else:
         if not checkpoint or not model_cfg:
             raise RuntimeError("SAM2 backend requires --sam2-checkpoint and --sam2-model-cfg.")
-        mask_iter = sam2_track_masks(video_path, prompt_boxes, checkpoint, model_cfg, device, max_frames=max_frames)
+        mask_iter = sam2_track_masks(
+            video_path,
+            prompt_boxes,
+            checkpoint,
+            model_cfg,
+            device,
+            max_frames=max_frames,
+            predictor=predictor,
+        )
         sam2_checkpoint = checkpoint
 
     total_entries = 0
