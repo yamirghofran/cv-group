@@ -34,7 +34,47 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", required=True)
     parser.add_argument("--mask-alpha", type=float, default=0.35)
     parser.add_argument("--teams", help="Optional path to a TeamOutput JSON file for team-coloured overlays.")
+    parser.add_argument(
+        "--jersey-numbers",
+        help="Optional path to a jersey_numbers.json file produced by OCR matching.",
+    )
     return parser
+
+
+def build_track_jersey_lookup(
+    jersey_numbers_data: dict[str, list[dict[str, Any]]] | dict[int, list[dict[str, Any]]],
+    min_appearances: int = 1,
+) -> dict[int, str]:
+    """Aggregate per-frame OCR matches into a stable per-track jersey number.
+
+    ``jersey_numbers_data`` is the dict written by the OCR matching step:
+    ``{frame_id: [{"track_id": ..., "predicted_number": ..., ...}, ...]}``.
+    JSON serialization may turn the outer keys into strings — we don't care.
+
+    For each track_id we tally the predicted_number values and pick the most
+    common one. Ties go to the first prediction seen. Tracks with fewer than
+    ``min_appearances`` matched frames are dropped.
+    """
+    from collections import Counter
+
+    per_track: dict[int, Counter[str]] = {}
+    for matches in jersey_numbers_data.values():
+        for match in matches:
+            number = match.get("predicted_number")
+            if number is None or number == "":
+                continue
+            try:
+                track_id = int(match["track_id"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            per_track.setdefault(track_id, Counter())[str(number)] += 1
+
+    lookup: dict[int, str] = {}
+    for track_id, counter in per_track.items():
+        if sum(counter.values()) < min_appearances:
+            continue
+        lookup[track_id] = counter.most_common(1)[0][0]
+    return lookup
 
 
 def tracks_by_frame(track_data: dict[str, Any]) -> dict[int, list[dict[str, Any]]]:
@@ -61,7 +101,14 @@ def overlay_mask(frame: np.ndarray, mask_path: Path, color: tuple[int, int, int]
     frame[mask > 0] = blended[mask > 0]
 
 
-def render_track_video(video_path: str | Path, tracks_path: str | Path, output_path: str | Path, mask_alpha: float, team_lookup: dict[int, str] | None = None) -> None:
+def render_track_video(
+    video_path: str | Path,
+    tracks_path: str | Path,
+    output_path: str | Path,
+    mask_alpha: float,
+    team_lookup: dict[int, str] | None = None,
+    jersey_lookup: dict[int, str] | None = None,
+) -> None:
     metadata = video_metadata(video_path)
     writer = open_video_writer(output_path, float(metadata["fps"]), int(metadata["width"]), int(metadata["height"]))
     track_map = tracks_by_frame(read_json(tracks_path))
@@ -74,12 +121,15 @@ def render_track_video(video_path: str | Path, tracks_path: str | Path, output_p
             for track in track_map.get(frame_id, []):
                 track_id = int(track["track_id"])
                 team_name = team_lookup.get(track_id) if team_lookup else None
+                jersey = jersey_lookup.get(track_id) if jersey_lookup else None
                 if team_name:
                     color = _team_color(team_name)
                     label = f"ID {track_id} ({team_name})"
                 else:
                     color = color_for_id(track_id)
                     label = f"ID {track_id}"
+                if jersey is not None:
+                    label = f"#{jersey} {label}"
                 mask_path = resolve_mask_path(track["mask_path"], tracks_path)
                 overlay_mask(annotated, mask_path, color, mask_alpha)
                 draw_bbox(annotated, track["bbox_xyxy"], label, color)
@@ -97,7 +147,17 @@ def main(argv: list[str] | None = None) -> int:
 
         team_data = TeamOutput.model_validate_json(Path(args.teams).read_text())
         team_lookup = build_track_team_lookup(team_data)
-    render_track_video(args.video, args.tracks, args.output, args.mask_alpha, team_lookup=team_lookup)
+    jersey_lookup: dict[int, str] | None = None
+    if args.jersey_numbers:
+        jersey_lookup = build_track_jersey_lookup(read_json(args.jersey_numbers))
+    render_track_video(
+        args.video,
+        args.tracks,
+        args.output,
+        args.mask_alpha,
+        team_lookup=team_lookup,
+        jersey_lookup=jersey_lookup,
+    )
     print(f"Wrote track visualization: {args.output}")
     return 0
 
