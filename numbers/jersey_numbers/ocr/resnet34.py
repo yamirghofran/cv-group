@@ -244,6 +244,16 @@ class ResNetOCR:
         conf, idx = probs.max(dim=1)
         return self.idx_to_class[idx.item()], float(conf.item())
 
+    def predict_proba(self, bgr_image: np.ndarray) -> tuple[np.ndarray, list[str]]:
+        from PIL import Image
+
+        rgb = bgr_image[..., ::-1].copy()
+        tensor = self.transform(Image.fromarray(rgb)).unsqueeze(0).to(self.device)
+        with torch.no_grad():
+            probs = F.softmax(self.model(tensor), dim=1).cpu().numpy()[0]
+        class_names = [self.idx_to_class[i] for i in range(len(self.idx_to_class))]
+        return probs, class_names
+
     def predict_batch(self, bgr_images: list[np.ndarray]) -> list[tuple[str, float]]:
         return [self.predict(img) for img in bgr_images]
 

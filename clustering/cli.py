@@ -14,7 +14,7 @@ from typing import Protocol
 
 import numpy as np
 
-from clustering.load_crops import load_crops
+from clustering.load_crops import load_track_crops
 from clustering.schemas import TeamAssignment, TeamOutput
 
 DEFAULT_METHOD = "siglip+umap+kmeans"
@@ -87,13 +87,20 @@ def run(
 
     `classifier_factory` is injected for tests so we can avoid loading SigLIP.
     In production it defaults to constructing a TeamClassifier.
+
+    Supports both flat crop directories and hierarchical ``track_*/``
+    sub-directories.  When track sub-directories are found, ``track_id`` is
+    parsed from the directory name and populated on each ``TeamAssignment``.
+    ``cluster_to_team_name`` is auto-populated as ``{0: "Team A", 1: "Team B",
+    ...}``.
     """
-    pairs = load_crops(args.crops_dir)
-    if not pairs:
+    triples = load_track_crops(args.crops_dir)
+    if not triples:
         raise ValueError(f"No crops found in {args.crops_dir}")
 
-    paths, images = zip(*pairs, strict=True)
+    paths, images, track_ids = zip(*triples, strict=True)
     images_list = list(images)
+    track_id_list = list(track_ids)
 
     if len(images_list) < args.n_teams:
         raise ValueError(
@@ -114,13 +121,24 @@ def run(
     classifier = classifier_factory()
     cluster_ids = classifier.fit_predict(images_list)
 
+    # Auto-assign human-readable team names: cluster 0 → "Team A", 1 → "Team B", …
+    cluster_to_team_name = {
+        cid: f"Team {chr(65 + cid)}" for cid in range(args.n_teams)
+    }
+
     output = TeamOutput(
         crops_dir=str(args.crops_dir),
         classifier_method=args.method,
         n_teams=args.n_teams,
+        cluster_to_team_name=cluster_to_team_name,
         assignments=[
-            TeamAssignment(crop_path=str(path), cluster_id=int(cid))
-            for path, cid in zip(paths, cluster_ids, strict=True)
+            TeamAssignment(
+                crop_path=str(path),
+                cluster_id=int(cid),
+                track_id=tid,
+                team_name=cluster_to_team_name.get(int(cid)),
+            )
+            for path, cid, tid in zip(paths, cluster_ids, track_id_list, strict=True)
         ],
     )
 

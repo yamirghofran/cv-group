@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import tempfile
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -14,6 +15,11 @@ from src.yolo_client import YoloLocalClient, YoloLocalSettings
 
 from .config import ApiSettings
 from .pipeline import ProcessResult, process_video
+
+# Add numbers directory to path for OCR imports
+_NUMBERS_DIR = Path(__file__).parent.parent / "numbers"
+if str(_NUMBERS_DIR) not in sys.path:
+    sys.path.insert(0, str(_NUMBERS_DIR))
 
 
 SUPPORTED_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv"}
@@ -39,9 +45,16 @@ async def lifespan(app: FastAPI):
     if settings.sam2_enabled:
         sam2_predictor = _build_sam2_predictor(settings)
 
+    # Load OCR model if enabled
+    ocr_model: Any | None = None
+    if settings.ocr_enabled:
+        from jersey_numbers.ocr.model_factory import create_ocr_model
+        ocr_model = create_ocr_model(settings.ocr_model_name, device=settings.ocr_device)
+
     app.state.settings = settings
     app.state.yolo = yolo
     app.state.sam2_predictor = sam2_predictor
+    app.state.ocr_model = ocr_model
 
     yield
 
@@ -56,6 +69,8 @@ def healthz(request: Request) -> dict[str, Any]:
         "status": "ok",
         "yolo_weights": str(settings.yolo_weights),
         "sam2_enabled": settings.sam2_enabled,
+        "ocr_enabled": settings.ocr_enabled,
+        "ocr_model": settings.ocr_model_name if settings.ocr_enabled else None,
     }
 
 
@@ -76,6 +91,7 @@ async def process(request: Request, video: UploadFile = File(...)) -> Any:
             video_path=upload_path,
             yolo=request.app.state.yolo,
             sam2_predictor=request.app.state.sam2_predictor,
+            ocr_model=request.app.state.ocr_model,
             settings=settings,
         )
     finally:
