@@ -52,3 +52,5 @@ numbers/data/
 numbers/checkpoints/
 # Per-machine Claude Code permissions
 .claude/settings.local.json
+
+docs/report.md
