@@ -1,0 +1,86 @@
+{
+  "config": {
+    "data": "/Users/borisgans/IE/computer-vision/group-project/cv-group/object-detection/data/yolov8/basketball_cv_project-1/data.yaml",
+    "split": "test",
+    "weights": "/Users/borisgans/IE/computer-vision/group-project/cv-group/object-detection/finetuning/runs/basketball_yolo11s/weights/best.pt",
+    "base_model": "/Users/borisgans/IE/computer-vision/group-project/cv-group/object-detection/finetuning/checkpoints/yolo11s.pt",
+    "imgsz": 640,
+    "conf": 0.001,
+    "iou": 0.6,
+    "match_iou": 0.5,
+    "n_images": 371,
+    "super_names": [
+      "person",
+      "ball"
+    ]
+  },
+  "fine_tuned": {
+    "per_class": [
+      {
+        "class": "person",
+        "ap50": 0.9542841272761791,
+        "p": 0.9437731196054254,
+        "r": 0.9011066635271957,
+        "f1": 0.9219465189111058,
+        "tp": 4147,
+        "fp": 9053,
+        "n_gt": 4247
+      },
+      {
+        "class": "ball",
+        "ap50": 0.6113934725479506,
+        "p": 0.8396624472573839,
+        "r": 0.5349462365591398,
+        "f1": 0.6535303776683087,
+        "tp": 274,
+        "fp": 3081,
+        "n_gt": 372
+      }
+    ],
+    "map50": 0.7828387999120648
+  },
+  "base": {
+    "per_class": [
+      {
+        "class": "person",
+        "ap50": 0.8559183103757988,
+        "p": 0.8937688718089487,
+        "r": 0.7666588179891688,
+        "f1": 0.8253485424588086,
+        "tp": 3998,
+        "fp": 41726,
+        "n_gt": 4247
+      },
+      {
+        "class": "ball",
+        "ap50": 0.03090963562584133,
+        "p": 0.12,
+        "r": 0.08064516129032258,
+        "f1": 0.09646302250803858,
+        "tp": 53,
+        "fp": 1313,
+        "n_gt": 372
+      }
+    ],
+    "map50": 0.4434139730008201
+  },
+  "delta": {
+    "per_class": [
+      {
+        "class": "person",
+        "ap50": 0.09836581690038027,
+        "p": 0.05000424779647672,
+        "r": 0.1344478455380269,
+        "f1": 0.09659797645229717
+      },
+      {
+        "class": "ball",
+        "ap50": 0.5804838369221093,
+        "p": 0.7196624472573839,
+        "r": 0.4543010752688172,
+        "f1": 0.5570673551602701
+      }
+    ],
+    "map50": 0.33942482691124476
+  }
+}
