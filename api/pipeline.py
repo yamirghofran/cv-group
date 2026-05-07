@@ -76,6 +76,51 @@ def process_video(
             output_path=annotated_video_path,
         )
 
+    matches: list[dict] = []
+    if sam2_predictor is not None:
+        import json
+
+        import cv2
+
+        from jersey_numbers.matching.ios import OCRModel, match_frame
+
+        ocr: OCRModel | None = None
+        if settings.ocr_checkpoint:
+            from jersey_numbers.ocr.resnet34 import ResNetOCR
+            ocr = ResNetOCR(settings.ocr_checkpoint)
+
+        tracks_path = work_dir / "tracks.json"
+        with detections_path.open() as f:
+            det_data = json.load(f)
+        with tracks_path.open() as f:
+            trk_data = json.load(f)
+
+        det_by_frame = {
+            int(fr["frame_id"]): [d for d in fr["detections"] if d.get("class_name") == "number"]
+            for fr in det_data.get("frames", [])
+        }
+        trk_by_frame = {int(fr["frame_id"]): fr.get("tracks", []) for fr in trk_data.get("frames", [])}
+
+        cap = cv2.VideoCapture(str(video_path))
+        try:
+            for frame_id in sorted(set(det_by_frame) & set(trk_by_frame)):
+                if not det_by_frame[frame_id]:
+                    continue
+                cap.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
+                ok, frame = cap.read()
+                matches.extend(match_frame(
+                    frame_id=frame_id,
+                    number_detections=det_by_frame[frame_id],
+                    tracks=trk_by_frame[frame_id],
+                    ios_threshold=settings.ios_threshold,
+                    frame_image=frame if ok else None,
+                    ocr_model=ocr,
+                ))
+        finally:
+            cap.release()
+
+        write_json(work_dir / "matches.json", matches)
+
     return ProcessResult(
         job_id=job_id,
         work_dir=work_dir,
@@ -84,6 +129,7 @@ def process_video(
         frames_sampled=len(detection_output.frames),
         annotated_video_path=annotated_video_path,
         sam2_used=sam2_predictor is not None,
+        extras={"matches": len(matches)},
     )
 
 
