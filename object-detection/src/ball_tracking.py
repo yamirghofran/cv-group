@@ -11,6 +11,7 @@ from .config import load_config, nested_get
 from .roboflow_client import RoboflowHostedClient, RoboflowHostedSettings, normalize_roboflow_predictions
 from .schemas import BallFrame, BallOutput, DetectionRecord
 from .utils import bbox_area, frame_timestamp, iter_video_frames, read_json, should_process_frame, video_metadata, write_json
+from .yolo_client import YoloLocalClient, YoloLocalSettings
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -32,6 +33,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--api-key-env", default="ROBOFLOW_API_KEY")
     parser.add_argument("--mock-response", help="Roboflow-style response reused for every sampled frame.")
     parser.add_argument("--max-frames", type=int, help="Optional frame limit for smoke tests.")
+    parser.add_argument("--detector-backend", choices=["roboflow", "yolo"], help="Ball detection backend.")
+    parser.add_argument("--yolo-weights", help="Path to a fine-tuned YOLO .pt file (for --detector-backend yolo).")
+    parser.add_argument("--yolo-imgsz", type=int)
+    parser.add_argument("--yolo-conf", type=float)
+    parser.add_argument("--yolo-iou", type=float)
+    parser.add_argument("--yolo-device", help="YOLO device override: cpu | mps | cuda index.")
     return parser
 
 
@@ -44,11 +51,18 @@ def detection_center(detection: DetectionRecord) -> list[float]:
     return [(x1 + x2) / 2.0, (y1 + y2) / 2.0]
 
 
+BALL_CLASS_NAMES: frozenset[str] = frozenset(
+    {"ball", "ball_vis_full", "ball_vis_partial", "ball_vis_visible"}
+)
+
+
 def ball_detection_candidates(detections: list[DetectionRecord], min_confidence: float) -> list[DetectionRecord]:
     return [
         detection
         for detection in detections
-        if detection.class_name.lower() == "ball" and detection.confidence >= min_confidence and bbox_area(detection.bbox_xyxy) > 0
+        if detection.class_name.lower() in BALL_CLASS_NAMES
+        and detection.confidence >= min_confidence
+        and bbox_area(detection.bbox_xyxy) > 0
     ]
 
 
@@ -158,18 +172,42 @@ def run_ball_tracking(args: argparse.Namespace) -> BallOutput:
         if args.prediction_gate_px is not None
         else float(nested_get(config, "ball_tracking.prediction_gate_px", 300))
     )
-    settings = RoboflowHostedSettings(
-        api_url=args.api_url or str(nested_get(config, "roboflow.api_url")),
-        model_id=args.model_id or str(nested_get(config, "roboflow.model_id")),
-        model_version=args.model_version if args.model_version is not None else int(nested_get(config, "roboflow.model_version")),
-        confidence=args.confidence if args.confidence is not None else int(nested_get(config, "roboflow.confidence")),
-        overlap=args.overlap if args.overlap is not None else int(nested_get(config, "roboflow.overlap")),
-        timeout_seconds=int(nested_get(config, "roboflow.timeout_seconds", 60)),
-        api_key_env=args.api_key_env,
-    )
+
+    backend = args.detector_backend or str(nested_get(config, "ball_tracking.backend", "roboflow"))
     output_path = Path(args.output) if args.output else default_output(video_path)
     mock_payload = read_json(args.mock_response) if args.mock_response else None
-    client = None if mock_payload is not None else RoboflowHostedClient(settings)
+
+    client: Any
+    prediction_source: str
+    if backend == "yolo":
+        if mock_payload is not None:
+            raise ValueError("--mock-response is only supported with --detector-backend roboflow.")
+        device_cfg = nested_get(config, "yolo.device")
+        yolo_settings = YoloLocalSettings(
+            weights_path=args.yolo_weights or str(nested_get(config, "yolo.weights_path")),
+            imgsz=args.yolo_imgsz if args.yolo_imgsz is not None else int(nested_get(config, "yolo.imgsz", 640)),
+            conf=args.yolo_conf if args.yolo_conf is not None else float(nested_get(config, "yolo.conf", 0.25)),
+            iou=args.yolo_iou if args.yolo_iou is not None else float(nested_get(config, "yolo.iou", 0.5)),
+            device=args.yolo_device if args.yolo_device is not None else (str(device_cfg) if device_cfg else None),
+        )
+        client = YoloLocalClient(yolo_settings)
+        model_id = f"yolo:{Path(yolo_settings.weights_path).stem}"
+        model_version = 0
+        prediction_source = "yolo"
+    else:
+        rf_settings = RoboflowHostedSettings(
+            api_url=args.api_url or str(nested_get(config, "roboflow.api_url")),
+            model_id=args.model_id or str(nested_get(config, "roboflow.model_id")),
+            model_version=args.model_version if args.model_version is not None else int(nested_get(config, "roboflow.model_version")),
+            confidence=args.confidence if args.confidence is not None else int(nested_get(config, "roboflow.confidence")),
+            overlap=args.overlap if args.overlap is not None else int(nested_get(config, "roboflow.overlap")),
+            timeout_seconds=int(nested_get(config, "roboflow.timeout_seconds", 60)),
+            api_key_env=args.api_key_env,
+        )
+        client = None if mock_payload is not None else RoboflowHostedClient(rf_settings)
+        model_id = rf_settings.model_id
+        model_version = rf_settings.model_version
+        prediction_source = "roboflow"
 
     frames: list[BallFrame] = []
     last_accepted_xy: np.ndarray | None = None
@@ -186,7 +224,7 @@ def run_ball_tracking(args: argparse.Namespace) -> BallOutput:
             frames_since_last = frame_id - last_accepted_frame_id if last_accepted_frame_id is not None else 1
             predicted_xy = predict_ball_xy(last_accepted_xy, last_velocity_xy, frames_since_last)
             ball_detection = pick_ball_detection(
-                normalize_roboflow_predictions(payload, width, height),
+                normalize_roboflow_predictions(payload, width, height, source=prediction_source),
                 min_confidence,
                 predicted_xy=predicted_xy,
                 prediction_gate_px=prediction_gate_px,
@@ -230,8 +268,8 @@ def run_ball_tracking(args: argparse.Namespace) -> BallOutput:
         fps=fps,
         width=width,
         height=height,
-        model_id=settings.model_id,
-        model_version=settings.model_version,
+        model_id=model_id,
+        model_version=model_version,
         frame_stride=frame_stride,
         frames=frames,
     )

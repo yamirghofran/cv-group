@@ -10,7 +10,13 @@ import numpy as np
 from .config import load_config, nested_get
 from .court_geometry import NBACourt, court_to_pixel, draw_court
 from .utils import color_for_id, draw_bbox, iter_video_frames, open_video_writer, read_json, video_metadata
-from .visualize_tracks import overlay_mask, resolve_mask_path, tracks_by_frame
+from .visualize_tracks import (
+    _team_color,
+    build_track_jersey_lookup,
+    overlay_mask,
+    resolve_mask_path,
+    tracks_by_frame,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -23,6 +29,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--panel-height", type=int)
     parser.add_argument("--trail-length", type=int)
     parser.add_argument("--mask-alpha", type=float, default=0.25)
+    parser.add_argument("--teams", help="Optional path to a TeamOutput JSON file for team-coloured overlays.")
+    parser.add_argument("--jersey-numbers", help="Optional path to a jersey_numbers.json file from OCR matching.")
     return parser
 
 
@@ -36,12 +44,28 @@ def resize_to_height(frame: np.ndarray, target_height: int) -> np.ndarray:
     return cv2.resize(frame, (int(round(width * scale)), target_height))
 
 
-def draw_source_tracks(frame: np.ndarray, tracks: list[dict[str, Any]], tracks_path: str | Path, mask_alpha: float) -> None:
+def draw_source_tracks(
+    frame: np.ndarray,
+    tracks: list[dict[str, Any]],
+    tracks_path: str | Path,
+    mask_alpha: float,
+    team_lookup: dict[int, str] | None = None,
+    jersey_lookup: dict[int, str] | None = None,
+) -> None:
     for track in tracks:
         track_id = int(track["track_id"])
-        color = color_for_id(track_id)
+        team_name = team_lookup.get(track_id) if team_lookup else None
+        jersey = jersey_lookup.get(track_id) if jersey_lookup else None
+        if team_name:
+            color = _team_color(team_name)
+            label = f"ID {track_id} ({team_name})"
+        else:
+            color = color_for_id(track_id)
+            label = f"ID {track_id}"
+        if jersey is not None:
+            label = f"#{jersey} {label}"
         overlay_mask(frame, resolve_mask_path(track["mask_path"], tracks_path), color, mask_alpha)
-        draw_bbox(frame, track["bbox_xyxy"], f"ID {track_id}", color)
+        draw_bbox(frame, track["bbox_xyxy"], label, color)
 
 
 def render_source_panel(
@@ -50,9 +74,11 @@ def render_source_panel(
     tracks_path: str | Path,
     mask_alpha: float,
     target_height: int,
+    team_lookup: dict[int, str] | None = None,
+    jersey_lookup: dict[int, str] | None = None,
 ) -> np.ndarray:
     annotated = frame.copy()
-    draw_source_tracks(annotated, tracks, tracks_path, mask_alpha)
+    draw_source_tracks(annotated, tracks, tracks_path, mask_alpha, team_lookup, jersey_lookup)
     return resize_to_height(annotated, target_height)
 
 
@@ -64,6 +90,8 @@ def draw_court_motion(
     scale: float,
     padding: int,
     trail_length: int,
+    team_lookup: dict[int, str] | None = None,
+    jersey_lookup: dict[int, str] | None = None,
 ) -> None:
     start_frame = max(0, frame_id - trail_length)
     by_track: dict[int, list[tuple[float, float]]] = {}
@@ -81,13 +109,16 @@ def draw_court_motion(
             ball_points.append(tuple(ball["court_xy"]))
 
     for track_id, points in by_track.items():
-        color = color_for_id(track_id)
+        team_name = team_lookup.get(track_id) if team_lookup else None
+        color = _team_color(team_name) if team_name else color_for_id(track_id)
         pixel_points = [court_to_pixel(point, court, scale, padding) for point in points]
         for pt1, pt2 in zip(pixel_points, pixel_points[1:]):
             cv2.line(court_image, pt1, pt2, color, 2)
         if pixel_points:
             cv2.circle(court_image, pixel_points[-1], 7, color, -1)
-            cv2.putText(court_image, str(track_id), (pixel_points[-1][0] + 7, pixel_points[-1][1] - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1)
+            jersey = jersey_lookup.get(track_id) if jersey_lookup else None
+            label = f"#{jersey}" if jersey is not None else str(track_id)
+            cv2.putText(court_image, label, (pixel_points[-1][0] + 7, pixel_points[-1][1] - 7), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1)
 
     ball_pixels = [court_to_pixel(point, court, scale, padding) for point in ball_points]
     for pt1, pt2 in zip(ball_pixels, ball_pixels[1:]):
@@ -96,7 +127,11 @@ def draw_court_motion(
         cv2.circle(court_image, ball_pixels[-1], 6, (0, 120, 255), -1)
 
 
-def render_side_by_side(args: argparse.Namespace) -> None:
+def render_side_by_side(
+    args: argparse.Namespace,
+    team_lookup: dict[int, str] | None = None,
+    jersey_lookup: dict[int, str] | None = None,
+) -> None:
     config = load_config(args.config)
     video_path = Path(args.video)
     metadata = video_metadata(video_path)
@@ -126,9 +161,27 @@ def render_side_by_side(args: argparse.Namespace) -> None:
         for frame_id, frame in iter_video_frames(video_path):
             if frame_id > max_frame:
                 break
-            source_panel = render_source_panel(frame, track_map.get(frame_id, []), args.tracks, args.mask_alpha, panel_height)
+            source_panel = render_source_panel(
+                frame,
+                track_map.get(frame_id, []),
+                args.tracks,
+                args.mask_alpha,
+                panel_height,
+                team_lookup=team_lookup,
+                jersey_lookup=jersey_lookup,
+            )
             court_frame = court_base.copy()
-            draw_court_motion(court_frame, frame_id, court_map, court, court_scale, 35, trail_length)
+            draw_court_motion(
+                court_frame,
+                frame_id,
+                court_map,
+                court,
+                court_scale,
+                35,
+                trail_length,
+                team_lookup=team_lookup,
+                jersey_lookup=jersey_lookup,
+            )
             court_frame = resize_to_height(court_frame, panel_height)
             combined = np.hstack([source_panel, court_frame])
             writer.write(combined)
@@ -138,7 +191,17 @@ def render_side_by_side(args: argparse.Namespace) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    render_side_by_side(args)
+    team_lookup: dict[int, str] | None = None
+    if args.teams:
+        from clustering.assign import build_track_team_lookup
+        from clustering.schemas import TeamOutput
+
+        team_data = TeamOutput.model_validate_json(Path(args.teams).read_text())
+        team_lookup = build_track_team_lookup(team_data)
+    jersey_lookup: dict[int, str] | None = None
+    if args.jersey_numbers:
+        jersey_lookup = build_track_jersey_lookup(read_json(args.jersey_numbers))
+    render_side_by_side(args, team_lookup=team_lookup, jersey_lookup=jersey_lookup)
     print(f"Wrote court movement visualization: {args.output}")
     return 0
 

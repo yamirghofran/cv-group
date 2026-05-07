@@ -29,9 +29,9 @@ clustering/outputs/
 clustering/data/
 
 # YOLO finetuning artifacts
-object-detection/finetuning/runs/
+object-detection/finetuning/runs/*
 object-detection/finetuning/checkpoints/
-runs/
+/runs/
 *.pt
 
 # Keep the finetuned basketball YOLO weights checked in
@@ -40,6 +40,9 @@ object-detection/finetuning/runs/basketball_yolo11s/*
 !object-detection/finetuning/runs/basketball_yolo11s/weights/
 object-detection/finetuning/runs/basketball_yolo11s/weights/*
 !object-detection/finetuning/runs/basketball_yolo11s/weights/best.pt
+!object-detection/finetuning/runs/basketball_yolo11s/eval/
+!object-detection/finetuning/runs/basketball_yolo11s/eval/*
+
 
 # Other files
 context/
@@ -50,3 +53,5 @@ numbers/data/
 numbers/checkpoints/
 # Per-machine Claude Code permissions
 .claude/settings.local.json
+
+docs/report.md
