@@ -44,7 +44,7 @@ class ApiSettings:
     cleanup_min_component_area: int
     max_upload_mb: int
     ios_threshold: float
-    ocr_checkpoint: Path | None
+    ocr_model_name: str | None
 
     @classmethod
     def from_env(cls) -> "ApiSettings":
@@ -77,5 +77,5 @@ class ApiSettings:
             cleanup_min_component_area=_env_int("BASKETBALL_API_CLEANUP_MIN_AREA", 50),
             max_upload_mb=_env_int("BASKETBALL_API_MAX_UPLOAD_MB", 500),
             ios_threshold=_env_float("BASKETBALL_API_IOS_THRESHOLD", 0.9),
-            ocr_checkpoint=Path(v) if (v := _env("BASKETBALL_API_OCR_CHECKPOINT")) else None,
+            ocr_model_name=_env("BASKETBALL_API_OCR_MODEL", "resnet34"),
         )

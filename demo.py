@@ -6,6 +6,12 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+# Ensure sub-package roots are on the path when running as a top-level script
+for _p in ["numbers", "object-detection"]:
+    _abs = str(Path(__file__).parent / _p)
+    if _abs not in sys.path:
+        sys.path.insert(0, _abs)
+
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Basketball CV pipeline demo.")
@@ -13,23 +19,24 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--yolo-weights", default="object-detection/finetuning/runs/basketball_yolo11s/weights/best.pt")
     p.add_argument("--sam2-checkpoint", help="SAM2 checkpoint (.pt). Omit to run detection-only.")
     p.add_argument("--sam2-model-cfg", default="configs/sam2.1/sam2.1_hiera_l.yaml")
-    p.add_argument("--ocr-checkpoint", default="numbers/models/resnet34.pth", help="ResNet OCR checkpoint.")
+    p.add_argument("--ocr-model", default="resnet34", help="OCR model: resnet34 | resnet18 | smolvlm2 | stacking")
     p.add_argument("--ios-threshold", type=float, default=0.9)
     p.add_argument("--frame-stride", type=int, default=5)
     p.add_argument("--output-dir", default="demo_output")
     p.add_argument("--device", default="auto")
     p.add_argument("--skip-tracking", action="store_true", help="Reuse existing tracks.json and masks — skip SAM2.")
     p.add_argument("--skip-clustering", action="store_true", help="Reuse existing teams.json — skip SigLIP clustering.")
+    p.add_argument("--skip-ball", action="store_true", help="Reuse existing ball.json — skip ball detection.")
+    p.add_argument("--skip-court", action="store_true", help="Reuse existing court_keypoints.json and court_tracks.json.")
     return p
 
 
-# ── Team colours (BGR) ────────────────────────────────────────────────────────
-TEAM_COLORS = {
-    0: (220, 60, 60),    # blue
-    1: (60, 60, 220),    # red
-    None: (160, 160, 160),  # unknown / referee
+# ── Team colours (BGR) — keyed by team name string ───────────────────────────
+TEAM_COLORS: dict[str | None, tuple[int, int, int]] = {
+    "Team A": (220, 60, 60),    # blue
+    "Team B": (60, 60, 220),    # red
+    None: (160, 160, 160),      # unknown / referee
 }
-TEAM_NAMES = {0: "Team A", 1: "Team B", None: "?"}
 
 
 def _resolve_device(name: str) -> str:
@@ -179,17 +186,18 @@ def _run_clustering(crops_dir, device, out_dir) -> Path:
     return path
 
 
-def _run_matching(video_path, detections_path, tracks_path, ios_threshold, ocr_checkpoint, device, out_dir) -> Path:
+def _run_matching(video_path, detections_path, tracks_path, ios_threshold, ocr_model_name, device, out_dir) -> Path:
     import cv2
     from jersey_numbers.matching.ios import match_frame, OCRModel
+    from jersey_numbers.ocr.model_factory import create_ocr_model
 
     ocr: OCRModel | None = None
-    if ocr_checkpoint and Path(ocr_checkpoint).exists():
-        from jersey_numbers.ocr.resnet34 import ResNetOCR
-        ocr = ResNetOCR(Path(ocr_checkpoint), device_str=device)
-        print(f"    -> OCR: {ocr_checkpoint}")
-    else:
-        print("     OCR checkpoint not found, skipping number reading.")
+    if ocr_model_name:
+        try:
+            ocr = create_ocr_model(ocr_model_name, device=device)
+            print(f"    -> OCR model: {ocr_model_name}")
+        except (FileNotFoundError, RuntimeError) as e:
+            print(f"    -> OCR skipped: {e}")
 
     with detections_path.open() as f:
         det_data = json.load(f)
@@ -244,20 +252,14 @@ def _render_video(video_path, tracks_path, matches_path, teams_path, out_dir) ->
         for tid, nums in number_votes.items()
     }
 
-    # Build track -> team (majority vote across crop labels)
-    track_team: dict[int, int] = {}
+    # Build track -> team name via majority vote
+    track_team: dict[int, str | None] = {}
     if teams_path and teams_path.exists():
-        with teams_path.open() as f:
-            teams_data = json.load(f)
-        team_votes: dict[int, list[int]] = {}
-        for a in teams_data.get("assignments", []):
-            tid = a.get("track_id")
-            if tid is not None:
-                team_votes.setdefault(tid, []).append(a["cluster_id"])
-        track_team = {
-            tid: Counter(votes).most_common(1)[0][0]
-            for tid, votes in team_votes.items()
-        }
+        from clustering.assign import build_track_team_lookup
+        from clustering.schemas import TeamOutput
+        track_team = build_track_team_lookup(
+            TeamOutput.model_validate_json(teams_path.read_text())
+        )
 
     with tracks_path.open() as f:
         trk_data = json.load(f)
@@ -311,8 +313,7 @@ def _render_video(video_path, tracks_path, matches_path, teams_path, out_dir) ->
 
                 # label: jersey number + team
                 number = track_number.get(tid, "?")
-                team_name = TEAM_NAMES[team]
-                label = f"#{number} {team_name}"
+                label = f"#{number} {team or '?'}"
                 (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.55, 1)
                 cv2.rectangle(annotated, (x1, y1 - th - 6), (x1 + tw + 4, y1), color, -1)
                 cv2.putText(annotated, label, (x1 + 2, y1 - 4),
@@ -324,6 +325,91 @@ def _render_video(video_path, tracks_path, matches_path, teams_path, out_dir) ->
         cap.release()
         writer.release()
 
+    print(f"    -> saved {out_path}")
+    return out_path
+
+
+def _run_ball_tracking(video_path, frame_stride, out_dir) -> Path:
+    import argparse
+    from src.ball_tracking import run_ball_tracking, build_parser
+
+    defaults = build_parser().parse_args([])
+    args = argparse.Namespace(
+        **vars(defaults),
+        video=str(video_path),
+        output=str(out_dir / "ball.json"),
+        frame_stride=frame_stride,
+        config="object-detection/config/default.yaml",
+    )
+    result = run_ball_tracking(args)
+    path = out_dir / "ball.json"
+    from src.utils import write_json
+    write_json(path, result.model_dump(mode="json"))
+    detected = sum(1 for f in result.frames if f.detection)
+    print(f"    -> {detected}/{len(result.frames)} frames with ball detection, saved {path}")
+    return path
+
+
+def _run_court_keypoints(video_path, frame_stride, device, out_dir) -> Path:
+    import argparse
+    from src.court_keypoints import run_court_keypoints, build_parser
+
+    defaults = build_parser().parse_args([])
+    args = argparse.Namespace(
+        **vars(defaults),
+        video=str(video_path),
+        output=str(out_dir / "court_keypoints.json"),
+        frame_stride=frame_stride,
+        device=device,
+        config="object-detection/config/default.yaml",
+    )
+    result = run_court_keypoints(args)
+    path = out_dir / "court_keypoints.json"
+    from src.utils import write_json
+    write_json(path, result.model_dump(mode="json"))
+    valid = sum(1 for f in result.frames if f.keypoints)
+    print(f"    -> {valid}/{len(result.frames)} frames with keypoints, saved {path}")
+    return path
+
+
+def _run_court_projection(video_path, tracks_path, court_kp_path, ball_path, out_dir) -> Path:
+    import argparse
+    from src.project_to_court import run_projection, build_parser
+
+    defaults = build_parser().parse_args([])
+    args = argparse.Namespace(
+        **vars(defaults),
+        video=str(video_path),
+        tracks=str(tracks_path),
+        court_keypoints=str(court_kp_path),
+        ball=str(ball_path) if ball_path and ball_path.exists() else None,
+        output=str(out_dir / "court_tracks.json"),
+        qa_report=None,
+        config="object-detection/config/default.yaml",
+    )
+    result = run_projection(args)
+    path = out_dir / "court_tracks.json"
+    from src.utils import write_json
+    write_json(path, result.model_dump(mode="json"))
+    print(f"    -> court projection saved {path}")
+    return path
+
+
+def _render_court_video(video_path, tracks_path, court_tracks_path, out_dir) -> Path:
+    import argparse
+    from src.visualize_court import render_side_by_side, build_parser
+
+    out_path = out_dir / "court_view.mp4"
+    defaults = build_parser().parse_args([])
+    args = argparse.Namespace(
+        **vars(defaults),
+        video=str(video_path),
+        tracks=str(tracks_path),
+        court_tracks=str(court_tracks_path),
+        output=str(out_path),
+        config="object-detection/config/default.yaml",
+    )
+    render_side_by_side(args)
     print(f"    -> saved {out_path}")
     return out_path
 
@@ -350,44 +436,87 @@ def main(argv=None):
     print(f"Device: {device}\n")
 
     # 1. Detection
-    print("[1/5] YOLO detection…")
+    print("[1/9] YOLO detection…")
     detections_path = _run_detection(video_path, args.yolo_weights, args.frame_stride, device, out_dir)
 
     if not args.sam2_checkpoint:
-        print("\nSkipping steps 2-5 (no --sam2-checkpoint). Detection saved.")
+        print("\nSkipping steps 2-9 (no --sam2-checkpoint). Detection saved.")
         return 0
 
     # 2. Tracking
     tracks_path = out_dir / "tracks.json"
     if args.skip_tracking and tracks_path.exists():
-        print(f"\n[2/5] Skipping SAM2 — reusing {tracks_path}")
+        print(f"\n[2/9] Skipping SAM2 — reusing {tracks_path}")
     else:
-        print("\n[2/5] SAM2 tracking…")
+        print("\n[2/9] SAM2 tracking…")
         tracks_path = _run_tracking(video_path, detections_path, args.sam2_checkpoint,
                                     args.sam2_model_cfg, device, out_dir)
         if tracks_path is None:
             return 1
 
     # 3. Extract crops for team clustering
-    print("\n[3/5] Extracting player crops…")
+    print("\n[3/9] Extracting player crops…")
     crops_dir = _extract_crops(video_path, tracks_path, out_dir)
 
     # 4. Team clustering
     teams_path = out_dir / "teams.json"
     if args.skip_clustering and teams_path.exists():
-        print(f"\n[4/5] Skipping clustering — reusing {teams_path}")
+        print(f"\n[4/9] Skipping clustering — reusing {teams_path}")
     else:
-        print("\n[4/5] Team clustering (SigLIP + UMAP + KMeans)…")
+        print("\n[4/9] Team clustering (SigLIP + UMAP + KMeans)…")
         teams_path = _run_clustering(crops_dir, device, out_dir)
 
     # 5. OCR matching
-    print("\n[5/5] IoS matching + OCR…")
+    print("\n[5/9] IoS matching + OCR…")
     matches_path = _run_matching(video_path, detections_path, tracks_path,
-                                 args.ios_threshold, args.ocr_checkpoint, device, out_dir)
+                                 args.ios_threshold, args.ocr_model, device, out_dir)
 
-    # 6. Render
-    print("\nRendering annotated video…")
+    # 6. Render annotated player video
+    print("\n[6/9] Rendering annotated video…")
     out_video = _render_video(video_path, tracks_path, matches_path, teams_path, out_dir)
+
+    # 7. Ball tracking
+    ball_path = out_dir / "ball.json"
+    if args.skip_ball and ball_path.exists():
+        print(f"\n[7/9] Skipping ball tracking — reusing {ball_path}")
+    else:
+        print("\n[7/9] Ball tracking (Roboflow API)…")
+        try:
+            ball_path = _run_ball_tracking(video_path, args.frame_stride, out_dir)
+        except Exception as e:
+            print(f"    -> WARNING: ball tracking failed ({e}) — skipping.")
+            ball_path = None
+
+    # 8. Court keypoints
+    court_kp_path = out_dir / "court_keypoints.json"
+    if args.skip_court and court_kp_path.exists():
+        print(f"\n[8/9] Skipping court keypoints — reusing {court_kp_path}")
+    else:
+        print("\n[8/9] Court keypoint detection…")
+        try:
+            court_kp_path = _run_court_keypoints(video_path, args.frame_stride, device, out_dir)
+        except Exception as e:
+            print(f"    -> WARNING: court keypoints failed ({e}) — skipping.")
+            court_kp_path = None
+
+    # 9. Court projection + minimap video
+    if court_kp_path and court_kp_path.exists():
+        court_tracks_path = out_dir / "court_tracks.json"
+        if args.skip_court and court_tracks_path.exists():
+            print(f"\n[9/9] Skipping court projection — reusing {court_tracks_path}")
+        else:
+            print("\n[9/9] Court projection + minimap video…")
+            try:
+                court_tracks_path = _run_court_projection(
+                    video_path, tracks_path, court_kp_path,
+                    ball_path if ball_path and ball_path.exists() else None,
+                    out_dir,
+                )
+                _render_court_video(video_path, tracks_path, court_tracks_path, out_dir)
+            except Exception as e:
+                print(f"    -> WARNING: court rendering failed ({e}) — skipping.")
+    else:
+        print("\n[9/9] Skipping court projection (no keypoints).")
 
     # Summary
     with matches_path.open() as f:
@@ -397,21 +526,18 @@ def main(argv=None):
         if m.get("predicted_number"):
             number_votes.setdefault(m["track_id"], []).append(m["predicted_number"])
 
-    print("\n Results")
-    with teams_path.open() as f:
-        teams_data = json.load(f)
-    team_votes2: dict[int, list] = {}
-    for a in teams_data.get("assignments", []):
-        tid = a.get("track_id")
-        if tid is not None:
-            team_votes2.setdefault(tid, []).append(a["cluster_id"])
-    track_team2 = {tid: Counter(v).most_common(1)[0][0] for tid, v in team_votes2.items()}
+    from clustering.assign import build_track_team_lookup
+    from clustering.schemas import TeamOutput
+    track_team_summary = build_track_team_lookup(
+        TeamOutput.model_validate_json(teams_path.read_text())
+    )
 
-    for tid in sorted(track_team2):
-        team = TEAM_NAMES[track_team2.get(tid)]
+    print("\n── Results ──────────────────────────────")
+    for tid in sorted(track_team_summary):
+        team = track_team_summary[tid]
         nums = number_votes.get(tid, [])
         num = Counter(nums).most_common(1)[0][0] if nums else "?"
-        print(f"  Track {tid:2d} -> {team}, jersey #{num}")
+        print(f"  Track {tid:2d} → {team}, jersey #{num}")
 
     print(f"\nOutput video: {out_video.resolve()}")
     return 0

@@ -85,9 +85,9 @@ def process_video(
         from jersey_numbers.matching.ios import OCRModel, match_frame
 
         ocr: OCRModel | None = None
-        if settings.ocr_checkpoint:
-            from jersey_numbers.ocr.resnet34 import ResNetOCR
-            ocr = ResNetOCR(settings.ocr_checkpoint)
+        if settings.ocr_model_name:
+            from jersey_numbers.ocr.model_factory import create_ocr_model
+            ocr = create_ocr_model(settings.ocr_model_name)
 
         tracks_path = work_dir / "tracks.json"
         with detections_path.open() as f:

@@ -83,10 +83,10 @@ uv run python demo.py --video clip_short.mp4 --sam2-checkpoint object-detection\
 SAM2 tracking and SigLIP clustering each take several minutes. Use these flags to skip steps whose outputs already exist in `demo_output/`:
 
 ```bash
-# skip both SAM2 and clustering
+# skip SAM2, clustering, ball tracking, and court pipeline
 uv run python demo.py --video clip_short.mp4 \
   --sam2-checkpoint object-detection/checkpoints/sam2.1_hiera_large.pt \
-  --skip-tracking --skip-clustering
+  --skip-tracking --skip-clustering --skip-ball --skip-court
 
 # skip only SAM2
 uv run python demo.py --video clip_short.mp4 \
@@ -101,10 +101,14 @@ All files are written to `demo_output/` (or the directory set with `--output-dir
 | File | Description |
 |---|---|
 | `annotated.mp4` | Final video with masks, boxes, jersey numbers, team labels |
+| `court_view.mp4` | Side-by-side: source video + 2D court minimap |
 | `detections.json` | YOLO detections per frame |
 | `tracks.json` | SAM2 player tracks + mask paths |
 | `matches.json` | IoS matches linking number detections to track IDs |
 | `teams.json` | SigLIP team cluster assignments per player crop |
+| `ball.json` | Ball position per frame (Roboflow API) |
+| `court_keypoints.json` | Detected court keypoints per frame |
+| `court_tracks.json` | Player + ball positions projected to 2D court coordinates |
 | `masks/` | Per-frame binary player mask images |
 | `crops/` | Per-frame player crop images used for team clustering |
 
@@ -123,12 +127,15 @@ Terminal summary at the end:
 ```
 clip.mp4
   │
-  ├─[1] YOLO detection      → detections.json   (players, numbers, ball, rim)
+  ├─[1] YOLO detection      → detections.json        (players, numbers, ball, rim)
   ├─[2] SAM2 tracking       → tracks.json + masks/
-  ├─[3] Crop extraction     → crops/             (one image per player per frame)
-  ├─[4] Team clustering     → teams.json         (SigLIP → UMAP → KMeans)
-  ├─[5] IoS matching + OCR  → matches.json       (number bbox → track_id → digit)
-  └─[6] Render              → annotated.mp4
+  ├─[3] Crop extraction     → crops/                  (one image per player per frame)
+  ├─[4] Team clustering     → teams.json              (SigLIP → UMAP → KMeans)
+  ├─[5] IoS matching + OCR  → matches.json            (number bbox → track_id → digit)
+  ├─[6] Render              → annotated.mp4           (masks + boxes + jersey + team)
+  ├─[7] Ball tracking       → ball.json               (Roboflow API + interpolation)
+  ├─[8] Court keypoints     → court_keypoints.json    (Roboflow API)
+  └─[9] Court projection    → court_tracks.json + court_view.mp4
 ```
 
 **IoS (Intersection over Smaller area)** is used instead of IoU to match number detections to players: it measures what fraction of the small number bounding box is covered by the (much larger) player mask, which handles partial occlusions better.
@@ -139,7 +146,7 @@ clip.mp4
 --video               Input video path (required)
 --sam2-checkpoint     SAM2 model weights (.pt) — omit to run detection only
 --sam2-model-cfg      SAM2 config yaml (default: configs/sam2.1/sam2.1_hiera_l.yaml)
---ocr-checkpoint      ResNet OCR weights (default: numbers/models/resnet34.pth)
+--ocr-model           OCR model: resnet34 | resnet18 | smolvlm2 | stacking (default: resnet34)
 --yolo-weights        YOLO weights (default: object-detection/finetuning/.../best.pt)
 --ios-threshold       Minimum IoS score to accept a match (default: 0.9)
 --frame-stride        Process every N frames for detection (default: 5)
@@ -147,4 +154,6 @@ clip.mp4
 --device              auto | cpu | cuda | mps (default: auto)
 --skip-tracking       Reuse existing tracks.json — skip SAM2
 --skip-clustering     Reuse existing teams.json — skip SigLIP clustering
+--skip-ball           Reuse existing ball.json — skip ball tracking
+--skip-court          Reuse existing court_keypoints.json and court_tracks.json
 ```
