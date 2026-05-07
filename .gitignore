@@ -48,6 +48,7 @@ object-detection/finetuning/runs/basketball_yolo11s/weights/*
 context/
 .DS_Store
 demo_output/
+demo_output_2s
 
 numbers/data/
 numbers/checkpoints/

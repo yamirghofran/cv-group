@@ -95,10 +95,11 @@ def overlay_mask(frame: np.ndarray, mask_path: Path, color: tuple[int, int, int]
     mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
     if mask is None or mask.shape[:2] != frame.shape[:2]:
         return
+    mask2d = mask.squeeze() > 0
     color_layer = np.zeros_like(frame)
-    color_layer[mask > 0] = color
+    color_layer[mask2d] = color
     blended = cv2.addWeighted(frame, 1.0, color_layer, alpha, 0.0)
-    frame[mask > 0] = blended[mask > 0]
+    frame[mask2d] = blended[mask2d]
 
 
 def render_track_video(

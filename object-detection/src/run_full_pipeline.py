@@ -145,6 +145,10 @@ def _ball_args(args: argparse.Namespace, video: Path, ball_path: Path) -> argpar
 
 
 def _court_keypoints_args(args: argparse.Namespace, video: Path, court_kp_path: Path) -> argparse.Namespace:
+    # Use local YOLO weights when provided; otherwise let court_keypoints.py
+    # read the backend from config (defaults to "roboflow").
+    court_weights = getattr(args, "court_weights", None)
+    backend = "yolo" if court_weights else None
     return _argns(
         video=str(video),
         output=str(court_kp_path),
@@ -152,13 +156,13 @@ def _court_keypoints_args(args: argparse.Namespace, video: Path, court_kp_path: 
         debug_frame_limit=10,
         frame_stride=args.court_frame_stride,
         config=args.config,
-        backend="yolo",
+        backend=backend,
         api_url=None,
         model_id=None,
         model_version=None,
         confidence=None,
         overlap=None,
-        weights=args.court_weights,
+        weights=court_weights,
         yolo_confidence=None,
         device=args.device,
         keypoint_confidence=None,
@@ -399,36 +403,44 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Path]:
         artifacts["ball"] = ball_path
 
     if args.no_tracking:
-        print("Skipping tracking and downstream stages.")
-        return artifacts
-
-    print("[3/9] SAM2 tracking")
-    sam2_checkpoint = args.sam2_checkpoint or str(nested_get(config, "tracking.sam2_checkpoint"))
-    sam2_model_cfg = args.sam2_model_cfg or str(nested_get(config, "tracking.sam2_model_cfg"))
-    sam2_device = args.device or str(nested_get(config, "tracking.device", "auto"))
-    _run_tracking(
-        video=video,
-        detections_path=detections_path,
-        tracks_path=tracks_path,
-        mask_dir=mask_dir,
-        qa_path=tracking_qa_path,
-        config=config,
-        sam2_checkpoint=sam2_checkpoint,
-        sam2_model_cfg=sam2_model_cfg,
-        device=sam2_device,
-    )
+        if not tracks_path.exists():
+            print("Skipping tracking and downstream stages (no existing tracks found).")
+            return artifacts
+        print(f"[3/9] Skipping SAM2 — reusing {tracks_path}")
+    else:
+        print("[3/9] SAM2 tracking")
+        sam2_checkpoint = args.sam2_checkpoint or str(nested_get(config, "tracking.sam2_checkpoint"))
+        sam2_model_cfg = args.sam2_model_cfg or str(nested_get(config, "tracking.sam2_model_cfg"))
+        sam2_device = args.device or str(nested_get(config, "tracking.device", "auto"))
+        _run_tracking(
+            video=video,
+            detections_path=detections_path,
+            tracks_path=tracks_path,
+            mask_dir=mask_dir,
+            qa_path=tracking_qa_path,
+            config=config,
+            sam2_checkpoint=sam2_checkpoint,
+            sam2_model_cfg=sam2_model_cfg,
+            device=sam2_device,
+        )
     artifacts["tracks"] = tracks_path
     artifacts["masks"] = mask_dir
 
     print("[4/9] Crop export (1 FPS)")
     crop_summary = export_crops(video, read_json(tracks_path), crops_dir, target_fps=1.0)
-    qa = read_json(tracking_qa_path)
+    qa = read_json(tracking_qa_path) if tracking_qa_path.exists() else {}
     qa["crop_summary"] = crop_summary
     write_json(tracking_qa_path, qa)
     artifacts["crops"] = crops_dir
 
     team_lookup: dict[int, str] | None = None
-    if not args.no_clustering and crop_summary.get("saved_crops", 0) > 0:
+    if args.no_clustering and teams_path.exists():
+        print(f"[5/9] Skipping clustering — reusing {teams_path}")
+        from clustering.assign import build_track_team_lookup
+        from clustering.schemas import TeamOutput
+        team_lookup = build_track_team_lookup(TeamOutput.model_validate_json(teams_path.read_text()))
+        artifacts["teams"] = teams_path
+    elif not args.no_clustering and crop_summary.get("saved_crops", 0) > 0:
         print("[5/9] Team clustering")
         team_lookup = _run_clustering(
             crops_dir=crops_dir,
