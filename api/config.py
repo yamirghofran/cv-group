@@ -43,14 +43,8 @@ class ApiSettings:
     cleanup_distance_threshold: float
     cleanup_min_component_area: int
     max_upload_mb: int
-    clustering_device: str
-    clustering_batch_size: int
-    clustering_n_teams: int
-    # OCR Settings
-    ocr_enabled: bool
-    ocr_model_name: str  # "resnet", "x2", or "smol"
-    ocr_ios_threshold: float
-    ocr_device: str
+    ios_threshold: float
+    ocr_model_name: str | None
 
     @classmethod
     def from_env(cls) -> "ApiSettings":
@@ -82,12 +76,6 @@ class ApiSettings:
             cleanup_distance_threshold=_env_float("BASKETBALL_API_CLEANUP_DIST", 80.0),
             cleanup_min_component_area=_env_int("BASKETBALL_API_CLEANUP_MIN_AREA", 50),
             max_upload_mb=_env_int("BASKETBALL_API_MAX_UPLOAD_MB", 500),
-            clustering_device=_env("BASKETBALL_API_CLUSTERING_DEVICE", "cpu") or "cpu",
-            clustering_batch_size=_env_int("BASKETBALL_API_CLUSTERING_BATCH_SIZE", 32),
-            clustering_n_teams=_env_int("BASKETBALL_API_CLUSTERING_N_TEAMS", 2),
-            # OCR Settings
-            ocr_enabled=_env_bool("BASKETBALL_API_OCR_ENABLED", False),
-            ocr_model_name=_env("BASKETBALL_API_OCR_MODEL", "resnet18") or "resnet18",
-            ocr_ios_threshold=_env_float("BASKETBALL_API_OCR_IOS_THRESHOLD", 0.9),
-            ocr_device=_env("BASKETBALL_API_OCR_DEVICE", "auto") or "auto",
+            ios_threshold=_env_float("BASKETBALL_API_IOS_THRESHOLD", 0.9),
+            ocr_model_name=_env("BASKETBALL_API_OCR_MODEL", "resnet34"),
         )

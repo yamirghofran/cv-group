@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import argparse
-import sys
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -16,7 +14,6 @@ from src.utils import (
     frame_timestamp,
     iter_video_frames,
     open_video_writer,
-    read_json,
     should_process_frame,
     video_metadata,
     write_json,
@@ -25,13 +22,6 @@ from src.visualize_tracks import render_track_video
 from src.yolo_client import YoloLocalClient
 
 from .config import ApiSettings
-
-# Add numbers directory to path for OCR imports
-_NUMBERS_DIR = Path(__file__).parent.parent / "numbers"
-if str(_NUMBERS_DIR) not in sys.path:
-    sys.path.insert(0, str(_NUMBERS_DIR))
-
-from jersey_numbers.matching.ios import match_frame, crop_number, load_mask
 
 
 @dataclass
@@ -43,9 +33,6 @@ class ProcessResult:
     frames_sampled: int
     annotated_video_path: Path
     sam2_used: bool
-    ocr_enabled: bool
-    teams_path: Path | None = None
-    jersey_numbers: dict[int, list[dict[str, Any]]] = field(default_factory=dict)
     extras: dict[str, Any] = field(default_factory=dict)
 
 
@@ -54,17 +41,9 @@ def process_video(
     video_path: Path,
     yolo: YoloLocalClient,
     sam2_predictor: Any | None,
-    ocr_model: Any | None,
     settings: ApiSettings,
 ) -> ProcessResult:
     """Run YOLO detection (always) and SAM2 tracking + render (if predictor is loaded).
-
-    When SAM2 tracking produces player crops, the pipeline also runs the
-    team-clustering stage and annotates the output video with team-coloured
-    overlays and labels.
-
-    When OCR is enabled and SAM2 tracking is active, jersey number recognition
-    is run as an additional step after tracking.
 
     Extension point for colleagues: append additional steps after detection or tracking
     using the artifacts in ``work_dir`` (detections.json, tracks.json, masks/, crops/).
@@ -82,21 +61,13 @@ def process_video(
     write_json(detections_path, detection_output.model_dump(mode="json"))
 
     annotated_video_path = work_dir / "annotated.mp4"
-    teams_path: Path | None = None
-    tracks_path: Path | None = None
-    mask_dir: Path | None = None
-
     if sam2_predictor is not None:
-        crop_dir = work_dir / "crops"
-        annotated_video_path, tracks_path, mask_dir, teams_path = (
-            _run_tracking_and_render(
-                video_path=video_path,
-                detections_path=detections_path,
-                work_dir=work_dir,
-                crop_dir=crop_dir,
-                sam2_predictor=sam2_predictor,
-                settings=settings,
-            )
+        annotated_video_path = _run_tracking_and_render(
+            video_path=video_path,
+            detections_path=detections_path,
+            work_dir=work_dir,
+            sam2_predictor=sam2_predictor,
+            settings=settings,
         )
     else:
         _render_yolo_overlay_video(
@@ -105,18 +76,50 @@ def process_video(
             output_path=annotated_video_path,
         )
 
-    # Run OCR if enabled and we have tracks with masks
-    jersey_numbers: dict[int, list[dict[str, Any]]] = {}
-    if ocr_model is not None and tracks_path is not None and mask_dir is not None:
-        jersey_numbers = _run_ocr_matching(
-            video_path=video_path,
-            tracks_path=tracks_path,
-            detections_path=detections_path,
-            mask_dir=mask_dir,
-            work_dir=work_dir,
-            ocr_model=ocr_model,
-            settings=settings,
-        )
+    matches: list[dict] = []
+    if sam2_predictor is not None:
+        import json
+
+        import cv2
+
+        from jersey_numbers.matching.ios import OCRModel, match_frame
+
+        ocr: OCRModel | None = None
+        if settings.ocr_model_name:
+            from jersey_numbers.ocr.model_factory import create_ocr_model
+            ocr = create_ocr_model(settings.ocr_model_name)
+
+        tracks_path = work_dir / "tracks.json"
+        with detections_path.open() as f:
+            det_data = json.load(f)
+        with tracks_path.open() as f:
+            trk_data = json.load(f)
+
+        det_by_frame = {
+            int(fr["frame_id"]): [d for d in fr["detections"] if d.get("class_name") == "number"]
+            for fr in det_data.get("frames", [])
+        }
+        trk_by_frame = {int(fr["frame_id"]): fr.get("tracks", []) for fr in trk_data.get("frames", [])}
+
+        cap = cv2.VideoCapture(str(video_path))
+        try:
+            for frame_id in sorted(set(det_by_frame) & set(trk_by_frame)):
+                if not det_by_frame[frame_id]:
+                    continue
+                cap.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
+                ok, frame = cap.read()
+                matches.extend(match_frame(
+                    frame_id=frame_id,
+                    number_detections=det_by_frame[frame_id],
+                    tracks=trk_by_frame[frame_id],
+                    ios_threshold=settings.ios_threshold,
+                    frame_image=frame if ok else None,
+                    ocr_model=ocr,
+                ))
+        finally:
+            cap.release()
+
+        write_json(work_dir / "matches.json", matches)
 
     return ProcessResult(
         job_id=job_id,
@@ -126,9 +129,7 @@ def process_video(
         frames_sampled=len(detection_output.frames),
         annotated_video_path=annotated_video_path,
         sam2_used=sam2_predictor is not None,
-        ocr_enabled=ocr_model is not None,
-        teams_path=teams_path,
-        jersey_numbers=jersey_numbers,
+        extras={"matches": len(matches)},
     )
 
 
@@ -205,14 +206,9 @@ def _run_tracking_and_render(
     video_path: Path,
     detections_path: Path,
     work_dir: Path,
-    crop_dir: Path,
     sam2_predictor: Any,
     settings: ApiSettings,
-) -> tuple[Path, Path, Path, Path | None]:
-    """Run SAM2 tracking, optional team clustering, and render the annotated video.
-
-    Returns ``(annotated_video_path, tracks_path, mask_dir, teams_path_or_none)``.
-    """
+) -> Path:
     metadata = video_metadata(video_path)
     width = int(metadata["width"])
     height = int(metadata["height"])
@@ -251,155 +247,6 @@ def _run_tracking_and_render(
     write_json(tracks_path, track_output.model_dump(mode="json"))
     write_json(work_dir / "tracking_qa.json", qa)
 
-    # Export player crops for downstream team clustering
-    from src.export_crops import export_crops
-
-    crop_summary = export_crops(
-        video_path, track_output.model_dump(mode="json"), crop_dir, target_fps=1.0
-    )
-    qa["crop_summary"] = crop_summary
-    write_json(work_dir / "tracking_qa.json", qa)
-
-    # --- Team clustering ---
-    teams_path: Path | None = None
-    team_lookup: dict[int, str] | None = None
-
-    if crop_summary.get("saved_crops", 0) > 0:
-        teams_path, team_lookup = _run_team_clustering(
-            crop_dir=crop_dir,
-            work_dir=work_dir,
-            settings=settings,
-        )
-        if team_lookup:
-            _enrich_tracks_with_teams(tracks_path, team_lookup)
-
     annotated_path = work_dir / "annotated.mp4"
-    render_track_video(
-        video_path, tracks_path, annotated_path,
-        mask_alpha=0.35,
-        team_lookup=team_lookup,
-    )
-    return annotated_path, tracks_path, mask_dir, teams_path
-
-
-def _run_team_clustering(
-    *,
-    crop_dir: Path,
-    work_dir: Path,
-    settings: ApiSettings,
-) -> tuple[Path, dict[int, str]]:
-    """Run the team-clustering stage on exported crops.
-
-    Returns ``(teams_json_path, track_id_to_team_name_lookup)``.
-    """
-    from clustering.assign import build_track_team_lookup
-    from clustering.cli import run as run_clustering
-
-    teams_path = work_dir / "teams.json"
-    args = argparse.Namespace(
-        crops_dir=crop_dir,
-        output=teams_path,
-        device=settings.clustering_device,
-        batch_size=settings.clustering_batch_size,
-        n_teams=settings.clustering_n_teams,
-        method="siglip+umap+kmeans",
-    )
-    team_output = run_clustering(args)
-
-    team_lookup = build_track_team_lookup(team_output)
-    return teams_path, team_lookup
-
-
-def _enrich_tracks_with_teams(
-    tracks_path: Path,
-    team_lookup: dict[int, str],
-) -> None:
-    """Read *tracks_path*, annotate each TrackRecord with ``team_name``, and rewrite."""
-    import json
-
-    tracks_data = json.loads(tracks_path.read_text())
-
-    for frame in tracks_data.get("frames", []):
-        for track in frame.get("tracks", []):
-            track_id = track.get("track_id")
-            if track_id is not None and track_id in team_lookup:
-                track["team_name"] = team_lookup[track_id]
-
-    write_json(tracks_path, tracks_data)
-
-
-def _run_ocr_matching(
-    *,
-    video_path: Path,
-    tracks_path: Path,
-    detections_path: Path,
-    mask_dir: Path,
-    work_dir: Path,
-    ocr_model: Any,
-    settings: ApiSettings,
-) -> dict[int, list[dict[str, Any]]]:
-    """Run OCR matching to associate jersey numbers with player tracks.
-
-    Returns dict mapping frame_id to list of matches with jersey numbers.
-    """
-    import cv2
-
-    # Load detections and tracks
-    detections_data = read_json(detections_path)
-    tracks_data = read_json(tracks_path)
-
-    # Get number detections from YOLO (class_name contains "number")
-    jersey_numbers: dict[int, list[dict[str, Any]]] = {}
-
-    # Open video for frame extraction
-    cap = cv2.VideoCapture(str(video_path))
-    if not cap.isOpened():
-        return jersey_numbers
-
-    try:
-        for frame_data in tracks_data.get("frames", []):
-            frame_id = frame_data["frame_id"]
-
-            # Get number detections for this frame
-            number_detections = []
-            for det_frame in detections_data.get("frames", []):
-                if det_frame["frame_id"] == frame_id:
-                    for det in det_frame.get("detections", []):
-                        if "number" in det.get("class_name", "").lower():
-                            number_detections.append(det)
-
-            if not number_detections:
-                continue
-
-            # Get tracks for this frame
-            tracks = frame_data.get("tracks", [])
-            if not tracks:
-                continue
-
-            # Read frame from video
-            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
-            ret, frame = cap.read()
-            if not ret:
-                continue
-
-            # Run matching with OCR
-            matches = match_frame(
-                frame_id=frame_id,
-                number_detections=number_detections,
-                tracks=tracks,
-                ios_threshold=settings.ocr_ios_threshold,
-                frame_image=frame,
-                ocr_model=ocr_model,
-            )
-
-            if matches:
-                jersey_numbers[frame_id] = matches
-
-    finally:
-        cap.release()
-
-    # Save jersey numbers to JSON
-    if jersey_numbers:
-        write_json(work_dir / "jersey_numbers.json", jersey_numbers)
-
-    return jersey_numbers
+    render_track_video(video_path, tracks_path, annotated_path, mask_alpha=0.35)
+    return annotated_path
